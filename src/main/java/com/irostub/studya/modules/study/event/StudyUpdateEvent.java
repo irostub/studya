@@ -1,7 +1,6 @@
 package com.irostub.studya.modules.study.event;
 
 import com.irostub.studya.modules.study.Study;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

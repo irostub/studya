@@ -1,11 +1,11 @@
 package com.irostub.studya.modules.event;
 
+import com.irostub.studya.modules.account.Account;
 import com.irostub.studya.modules.event.event.EnrollmentAcceptedEvent;
 import com.irostub.studya.modules.event.event.EnrollmentRejectedEvent;
 import com.irostub.studya.modules.event.form.EventForm;
-import com.irostub.studya.modules.account.Account;
-import com.irostub.studya.modules.study.Study;
 import com.irostub.studya.modules.study.EnrollmentRepository;
+import com.irostub.studya.modules.study.Study;
 import com.irostub.studya.modules.study.event.StudyUpdateEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;

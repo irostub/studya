@@ -2,15 +2,12 @@ package com.irostub.studya.modules.study;
 
 
 import com.irostub.studya.modules.account.Account;
-import com.irostub.studya.modules.tag.Tag;
-import com.irostub.studya.modules.zone.Zone;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Transactional(readOnly = true)
 public interface StudyRepository extends JpaRepository<Study, Long>, StudyRepositorySupport {

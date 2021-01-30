@@ -1,7 +1,7 @@
 package com.irostub.studya.modules.event;
 
-import com.irostub.studya.modules.account.UserAccount;
 import com.irostub.studya.modules.account.Account;
+import com.irostub.studya.modules.account.UserAccount;
 import com.irostub.studya.modules.study.Study;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

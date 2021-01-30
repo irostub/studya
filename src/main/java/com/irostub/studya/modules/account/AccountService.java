@@ -1,13 +1,13 @@
 package com.irostub.studya.modules.account;
 
 import com.irostub.studya.infra.config.AppProperties;
+import com.irostub.studya.infra.mail.MailMessage;
+import com.irostub.studya.infra.mail.MailService;
 import com.irostub.studya.modules.account.form.NotificationForm;
 import com.irostub.studya.modules.account.form.ProfileForm;
 import com.irostub.studya.modules.account.form.SignupForm;
 import com.irostub.studya.modules.tag.Tag;
 import com.irostub.studya.modules.tag.TagRepository;
-import com.irostub.studya.infra.mail.MailMessage;
-import com.irostub.studya.infra.mail.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

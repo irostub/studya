@@ -1,8 +1,8 @@
 package com.irostub.studya.modules.main;
 
+import com.irostub.studya.modules.account.Account;
 import com.irostub.studya.modules.account.AccountRepository;
 import com.irostub.studya.modules.account.CurrentAccount;
-import com.irostub.studya.modules.account.Account;
 import com.irostub.studya.modules.study.EnrollmentRepository;
 import com.irostub.studya.modules.study.Study;
 import com.irostub.studya.modules.study.StudyRepository;
