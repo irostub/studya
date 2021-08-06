@@ -1,5 +1,6 @@
 package com.irostub.studya.controller;
 
+import com.irostub.studya.domain.Account;
 import com.irostub.studya.repository.AccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,6 +69,10 @@ class AccountControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
 
+        Account findAccount = repository.findByEmail("jjj@jjj.com");
+
+        assertThat(findAccount).isNotNull();
+        assertThat(findAccount.getPassword()).isNotEqualTo("qwerzxcv1");
         assertThat(repository.existsByEmail("jjj@jjj.com")).isEqualTo(true);
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
