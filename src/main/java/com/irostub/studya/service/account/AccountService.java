@@ -6,6 +6,7 @@ import com.irostub.studya.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class AccountService {
     private final AccountRepository repository;
     private final JavaMailSender javaMailSender;
+    private final PasswordEncoder passwordEncoder;
 
     public void processSaveNewAccount(SignupForm signupForm) {
         Account account = saveNewAccount(signupForm);
@@ -23,7 +25,7 @@ public class AccountService {
         Account account = Account.builder()
                 .email(signupForm.getEmail())
                 .nickname(signupForm.getNickname())
-                .password(signupForm.getPassword()) //암호화 해야함
+                .password(passwordEncoder.encode(signupForm.getPassword()))
                 .studyUpdatedByWeb(true)
                 .studyCreatedByWeb(true)
                 .studyEnrollmentResultByWeb(true)
