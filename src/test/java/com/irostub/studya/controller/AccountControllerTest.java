@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -69,11 +70,45 @@ class AccountControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
 
-        Account findAccount = repository.findByEmail("jjj@jjj.com");
-
-        assertThat(findAccount).isNotNull();
+        Account findAccount = repository.findByEmail("jjj@jjj.com").orElseThrow();
+        assertThat(findAccount.getEmailCheckToken()).isNotNull();
         assertThat(findAccount.getPassword()).isNotEqualTo("qwerzxcv1");
         assertThat(repository.existsByEmail("jjj@jjj.com")).isEqualTo(true);
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
+    }
+
+    @Test
+    @DisplayName("회원가입 이메일 인증 정상")
+    @Transactional
+    void verifyEmail() throws Exception {
+        Account account = Account.builder()
+                        .email("jjj@jjj.jjj")
+                        .nickname("irostub")
+                        .password("qwer1234")
+                        .build();
+        Account saveAccount = repository.save(account);
+        saveAccount.generateEmailCheckToken();
+
+        mockMvc.perform(get("/check-email-token")
+                .param("email", saveAccount.getEmail())
+                .param("token", saveAccount.getEmailCheckToken()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/checked-email"))
+                .andExpect(model().attributeDoesNotExist("error"))
+                .andExpect(model().attributeExists("count"))
+                .andExpect(model().attributeExists("name"));
+    }
+
+    @Test
+    @DisplayName("회원가입 이메일 인증 실패")
+    void verifyEmailFail() throws Exception {
+        mockMvc.perform(get("/check-email-token")
+                .param("email", "abc")
+                .param("token", "wrong"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/checked-email"))
+                .andExpect(model().attributeExists("error"))
+                .andExpect(model().attributeDoesNotExist("count"))
+                .andExpect(model().attributeDoesNotExist("name"));
     }
 }
