@@ -8,16 +8,22 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
-    private final AccountRepository repository;
+    private final AccountRepository accountRepository;
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void processSaveNewAccount(SignupForm signupForm) {
         Account account = saveNewAccount(signupForm);
+        account.generateEmailCheckToken();
         sendVerifyEmail(account);
     }
 
@@ -30,8 +36,7 @@ public class AccountService {
                 .studyCreatedByWeb(true)
                 .studyEnrollmentResultByWeb(true)
                 .build();
-        account.generateEmailCheckToken();
-        return repository.save(account);
+        return accountRepository.save(account);
     }
 
     public void sendVerifyEmail(Account saveAccount) {
@@ -41,5 +46,22 @@ public class AccountService {
         mail.setText("/check-email-token?email=" + saveAccount.getEmail() + "&token=" + saveAccount.getEmailCheckToken());
 
         javaMailSender.send(mail);
+    }
+
+    public void verifyEmail(String email, String token, Model model){
+        Account findAccount = accountRepository.findByEmail(email).orElse(null);
+        if (findAccount == null) {
+            model.addAttribute("error", "account not found");
+            return;
+        }
+        if(!findAccount.getEmailCheckToken().equals(token)){
+            model.addAttribute("error", "token not found");
+            return;
+        }
+        findAccount.setEmailVerified(true);
+        findAccount.setJoinedAt(LocalDateTime.now());
+        accountRepository.save(findAccount);
+        model.addAttribute("count", accountRepository.count());
+        model.addAttribute("name", findAccount.getNickname());
     }
 }
