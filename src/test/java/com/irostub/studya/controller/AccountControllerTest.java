@@ -2,6 +2,8 @@ package com.irostub.studya.controller;
 
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.repository.AccountRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +42,24 @@ class AccountControllerTest {
     @MockBean
     private JavaMailSender javaMailSender;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    void beforeEach() {
+        Account account = Account.builder()
+                .email("irostub@mail.com")
+                .nickname("irostub")
+                .password(passwordEncoder.encode("qwer1234"))
+                .build();
+        repository.save(account);
+    }
+
+    @AfterEach
+    void afterEach() {
+        repository.deleteAll();
+    }
+
     @Test
     @DisplayName("회원 가입 뷰 컨트롤러 테스트")
     void signUpForm() throws Exception {
@@ -44,7 +67,7 @@ class AccountControllerTest {
                 .perform(get("/sign-up"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("account/sign-up"))
+                .andExpect(view().name("content/account/sign-up"))
                 .andExpect(model().attributeExists("form"))
                 .andExpect(unauthenticated());
     }
@@ -54,12 +77,12 @@ class AccountControllerTest {
     @DisplayName("회원 가입 처리 - 입력값 오류")
     void signupSubmitWithWrongInput() throws Exception {
         mockMvc.perform(post("/sign-up")
-                        .param("nickname", "irostub")
-                        .param("email", "email...")
-                        .param("password", "aaa")
+                        .param("nickname", "testuser")
+                        .param("email", "wrongEmail")
+                        .param("password", "wrongPassword")
                         .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("account/sign-up"))
+                .andExpect(view().name("content/account/sign-up"))
                 .andExpect(unauthenticated());
     }
 
@@ -67,18 +90,18 @@ class AccountControllerTest {
     @DisplayName("회원 가입 처리 - 입력값 정상")
     void signupSubmitWithCorrectInput() throws Exception {
         mockMvc.perform(post("/sign-up")
-                        .param("nickname", "irostub")
-                        .param("email", "jjj@jjj.com")
-                        .param("password", "qwerzxcv1")
+                        .param("nickname", "testuser")
+                        .param("email", "testuser@mail.com")
+                        .param("password", "qwer1234")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"))
-                .andExpect(authenticated().withUsername("irostub"));
+                .andExpect(authenticated().withUsername("testuser"));
 
-        Account findAccount = repository.findByEmail("jjj@jjj.com").orElseThrow();
+        Account findAccount = repository.findByEmail("testuser@mail.com").orElseThrow();
         assertThat(findAccount.getEmailCheckToken()).isNotNull();
-        assertThat(findAccount.getPassword()).isNotEqualTo("qwerzxcv1");
-        assertThat(repository.existsByEmail("jjj@jjj.com")).isEqualTo(true);
+        assertThat(findAccount.getPassword()).isNotEqualTo("qwer1234");
+        assertThat(repository.existsByEmail("testuser@mail.com")).isEqualTo(true);
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
 
@@ -86,19 +109,14 @@ class AccountControllerTest {
     @DisplayName("회원가입 이메일 인증 정상")
     @Transactional
     void verifyEmail() throws Exception {
-        Account account = Account.builder()
-                        .email("jjj@jjj.jjj")
-                        .nickname("irostub")
-                        .password("qwer1234")
-                        .build();
-        Account saveAccount = repository.save(account);
+        Account saveAccount = repository.findByNickname("irostub").orElse(null);
         saveAccount.generateEmailCheckToken();
 
         mockMvc.perform(get("/check-email-token")
                         .param("email", saveAccount.getEmail())
                         .param("token", saveAccount.getEmailCheckToken()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("account/checked-email"))
+                .andExpect(view().name("content/account/checked-email"))
                 .andExpect(model().attributeDoesNotExist("error"))
                 .andExpect(model().attributeExists("count"))
                 .andExpect(model().attributeExists("name"))
@@ -112,10 +130,46 @@ class AccountControllerTest {
                 .param("email", "abc")
                 .param("token", "wrong"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("account/checked-email"))
+                .andExpect(view().name("content/account/checked-email"))
                 .andExpect(model().attributeExists("error"))
                 .andExpect(model().attributeDoesNotExist("count"))
                 .andExpect(model().attributeDoesNotExist("name"))
                 .andExpect(unauthenticated());
     }
+
+    @Test
+    @DisplayName("로그인 인증 성공")
+    void loginSuccess() throws Exception {
+        mockMvc.perform(post("/login")
+                        .param("username", "irostub")
+                        .param("password", "qwer1234")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andExpect(authenticated().withUsername("irostub"));
+    }
+
+    @Test
+    @DisplayName("로그인 인증 실패")
+    void loginFail() throws Exception {
+        mockMvc.perform(post("/login")
+                        .param("username", "irostub")
+                        .param("password", "qwer")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?error"))
+                .andExpect(unauthenticated());
+    }
+
+    @Test
+    @DisplayName("로그아웃")
+    void logout() throws Exception {
+        mockMvc.perform(post("/logout")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andExpect(cookie().doesNotExist("JSESSIONID"))
+                .andExpect(unauthenticated());
+    }
+
 }

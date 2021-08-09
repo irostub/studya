@@ -12,7 +12,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class AccountController {
     }
 
     @PostMapping("/sign-up")
-    public String doSignup(@Validated @ModelAttribute("form") SignupForm signupForm, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String doSignup(@Validated @ModelAttribute("form") SignupForm signupForm, BindingResult result) {
         if (result.hasErrors()) {
             return "content/account/sign-up";
         }
