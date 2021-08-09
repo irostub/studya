@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<!--/*@thymesVar id="error" type="java.lang.String"*/-->
+<!--/*@thymesVar id="count" type="java.lang.Long"*/-->
+<body class="bg-light">
+<div layout:fragment="content" class="container">
+  <div class="py-5 text-center" th:if="${error}">
+    <p class="lead">스터디야 이메일 확인</p>
+    <div class="alert alert-danger" role="alert">이메일 확인 링크가 정확하지 않습니다.</div>
+  </div>
+  <div class="py-5 text-center" th:if="${error == null}">
+    <p class="lead">스터디야 이메일 확인</p>
+    <h2>이메일을 확인했습니다.
+    <span th:text="${count}"></span>번째 회원, <span th:text="${name}"></span>님 환영합니다.</h2>
+    <small class="text-primary">이제부터 가입할 때 사용한 이메일 또는 닉네임과 패스워드로 로그인 할 수 있습니다.</small>
+  </div>
+</div>
+</body>
+</html>

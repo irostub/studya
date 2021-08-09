@@ -1,51 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko"
-      xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet"
-        href="/webjars/bootstrap/4.6.0-1/css/bootstrap.min.css"
-        th:href="@{/webjars/bootstrap/4.6.0-1/css/bootstrap.min.css}">
-  <style>
-      .container {
-          max-width: 100%;
-      }
-  </style>
-  <title>Studya</title>
-</head>
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
 <body class="bg-light">
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-  <a href="/" th:href="@{/}">
-    <img class="mr-3" width="30" height="30" alt="logoImg"
-         src="/static/images/logo_transparent.png"
-         th:src="@{/images/logo_transparent.png}">
-  </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
-          aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarText">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <form th:action="@{/search/study}" class="form-inline" method="get">
-          <input type="search" class="form-control mr-sm-2" name="keyword" placeholder="스터디 찾기">
-        </form>
-      </li>
-    </ul>
-
-    <ul class="navbar-nav justify-content-end">
-      <li class="nav-item">
-        <a class="nav-link" href="#" th:href="@{/login}">로그인</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#" th:href="@{/signup}">가입</a>
-      </li>
-    </ul>
-  </div>
-</nav>
-
-<div class="container">
+<div layout:fragment="content" class="container">
   <div class="py-5 text-center">
     <h2>계정 만들기</h2>
   </div>
@@ -100,15 +59,8 @@
       </div>
     </form>
   </div>
-  <footer>
-    <div class="row justify-content-center">
-      <img class="mb-2 mr-2" src="/static/images/logo_transparent.png"
-           th:src="@{/images/logo_transparent.png}" alt="" width="20" height="20">
-      <small class="d-block mb-3 text-muted">anytime, everywhere &copy; 2020</small>
-    </div>
-</footer>
 </div>
-<script th:inline="javascript">
+<script layout:fragment="customScript" th:inline="javascript">
     (function () {
         'use strict';
 
@@ -129,11 +81,5 @@
         }, false)
     }())
 </script>
-<script th:src="@{/webjars/jquery/3.5.1/jquery.slim.min.js}"
-        src="/webjars/jquery/3.5.1/jquery.slim.min.js"></script>
-<script th:src="@{/webjars/popper.js/1.16.0/popper.min.js}"
-        src="/webjars/popper.js/1.16.0/popper.min.js"></script>
-<script th:src="@{/webjars/bootstrap/4.6.0-1/js/bootstrap.min.js}"
-        src="/webjars/bootstrap/4.6.0-1/js/bootstrap.min.js"></script>
 </body>
 </html>

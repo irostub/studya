@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<nav th:fragment="default-navbar" class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <a href="/" th:href="@{/}">
+    <img class="mr-3" width="30" height="30" alt="logoImg"
+         src=""
+         th:src="@{/images/logo_transparent.png}">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+          aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarText">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <form th:action="@{/search/study}" class="form-inline" method="get">
+          <input type="search" class="form-control mr-sm-2" name="keyword" placeholder="스터디 찾기">
+        </form>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav justify-content-end" sec:authorize="!isAuthenticated()">
+      <li class="nav-item">
+        <a class="nav-link" href="#" th:href="@{/login}">로그인</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" th:href="@{/sign-up}">가입</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav justify-content-end" sec:authorize="isAuthenticated()">
+      <li class="nav-item">
+        <a class="nav-link" href="#" th:href="@{/notifications}">
+          <i class="fa fa-bell-o"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link btn btn-outline-primary" href="#" th:href="@{/}"><i class="fa fa-plus" aria-hidden="true"></i> 스터디 개설</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          프로필 <svg width="25" height="25" th:data-jdenticon-value="${#authentication.getName()}"></svg>
+        </a>
+        <div class="dropdown-menu dropdown-menu-sm-right" aria-labelledby="userDropdown">
+          <h6 class="dropdown-header">
+            <span sec:authentication="name">Username</span>
+          </h6>
+          <a class="dropdown-item" href="#"
+             th:href="@{|/profile/${#authentication.name}|}">프로필</a>
+          <a class="dropdown-item" href="#">스터디</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#"
+             th:href="@{/settings/profile}">설정</a>
+          <form class="form-inline my-2 my-lg-0" action="#" th:action="@{/logout}" method="post">
+            <button class="dropdown-item" type="submit">로그아웃</button>
+          </form>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+</body>
+</html>

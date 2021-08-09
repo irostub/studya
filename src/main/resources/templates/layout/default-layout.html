@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head th:replace="fragment/header::default-header">
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body class="bg-light">
+<div th:replace="fragment/navbar :: default-navbar"></div>
+<div layout:fragment="content"></div>
+<div th:replace="fragment/footer.html :: default-footer"> Footer 대체 부분 </div>
+<div th:replace="fragment/scripts :: default-script"></div>
+<div layout:fragment="customScript"></div>
+</body>
+</html>
