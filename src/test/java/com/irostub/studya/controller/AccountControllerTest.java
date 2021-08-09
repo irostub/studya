@@ -17,6 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -43,7 +45,8 @@ class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/sign-up"))
-                .andExpect(model().attributeExists("form"));
+                .andExpect(model().attributeExists("form"))
+                .andExpect(unauthenticated());
     }
 
     //폼 테스트 시 spring security 와 물릴 때 csrf 체크할 것.
@@ -56,7 +59,8 @@ class AccountControllerTest {
                         .param("password", "aaa")
                         .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("account/sign-up"));
+                .andExpect(view().name("account/sign-up"))
+                .andExpect(unauthenticated());
     }
 
     @Test
@@ -68,7 +72,8 @@ class AccountControllerTest {
                         .param("password", "qwerzxcv1")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
+                .andExpect(view().name("redirect:/"))
+                .andExpect(authenticated().withUsername("irostub"));
 
         Account findAccount = repository.findByEmail("jjj@jjj.com").orElseThrow();
         assertThat(findAccount.getEmailCheckToken()).isNotNull();
@@ -90,13 +95,14 @@ class AccountControllerTest {
         saveAccount.generateEmailCheckToken();
 
         mockMvc.perform(get("/check-email-token")
-                .param("email", saveAccount.getEmail())
-                .param("token", saveAccount.getEmailCheckToken()))
+                        .param("email", saveAccount.getEmail())
+                        .param("token", saveAccount.getEmailCheckToken()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/checked-email"))
                 .andExpect(model().attributeDoesNotExist("error"))
                 .andExpect(model().attributeExists("count"))
-                .andExpect(model().attributeExists("name"));
+                .andExpect(model().attributeExists("name"))
+                .andExpect(authenticated().withUsername("irostub"));
     }
 
     @Test
@@ -109,6 +115,7 @@ class AccountControllerTest {
                 .andExpect(view().name("account/checked-email"))
                 .andExpect(model().attributeExists("error"))
                 .andExpect(model().attributeDoesNotExist("count"))
-                .andExpect(model().attributeDoesNotExist("name"));
+                .andExpect(model().attributeDoesNotExist("name"))
+                .andExpect(unauthenticated());
     }
 }
