@@ -1,17 +1,22 @@
 package com.irostub.studya.service.account;
 
+import com.irostub.studya.controller.UserAccount;
 import com.irostub.studya.controller.form.accountForm.SignupForm;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +26,11 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void processSaveNewAccount(SignupForm signupForm) {
+    public Account processSaveNewAccount(SignupForm signupForm) {
         Account account = saveNewAccount(signupForm);
         account.generateEmailCheckToken();
         sendVerifyEmail(account);
+        return account;
     }
 
     public Account saveNewAccount(SignupForm signupForm) {
@@ -48,20 +54,29 @@ public class AccountService {
         javaMailSender.send(mail);
     }
 
-    public void verifyEmail(String email, String token, Model model){
+    public Account verifyEmail(String email, String token, Model model){
         Account findAccount = accountRepository.findByEmail(email).orElse(null);
         if (findAccount == null) {
             model.addAttribute("error", "account not found");
-            return;
+            return null;
         }
         if(!findAccount.getEmailCheckToken().equals(token)){
             model.addAttribute("error", "token not found");
-            return;
+            return null;
         }
         findAccount.setEmailVerified(true);
         findAccount.setJoinedAt(LocalDateTime.now());
-        accountRepository.save(findAccount);
+        findAccount = accountRepository.save(findAccount);
         model.addAttribute("count", accountRepository.count());
         model.addAttribute("name", findAccount.getNickname());
+        return findAccount;
+    }
+
+    public void login(Account account) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                new UserAccount(account),
+                account.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 }
