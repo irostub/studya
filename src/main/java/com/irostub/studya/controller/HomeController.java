@@ -1,5 +1,6 @@
 package com.irostub.studya.controller;
 
+import com.irostub.studya.annotation.CurrentUser;
 import com.irostub.studya.domain.Account;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

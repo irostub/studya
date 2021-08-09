@@ -1,5 +1,6 @@
 package com.irostub.studya.controller;
 
+import com.irostub.studya.annotation.CurrentUser;
 import com.irostub.studya.controller.form.accountForm.SignupForm;
 import com.irostub.studya.controller.validator.SignupValidator;
 import com.irostub.studya.domain.Account;
@@ -59,11 +60,16 @@ public class AccountController {
 
     @GetMapping("/resend-email-check")
     public String resendEmailCheck(@CurrentUser Account account, Model model) {
-        if(!account.isEmailCheckTokenBeforeOneHour()){
+        if (!account.isEmailCheckTokenBeforeOneHour()) {
             model.addAttribute("error", "한 시간에 한번만 이메일을 재전송할 수 있습니다.");
             return "content/account/check-email";
         }
         accountService.sendVerifyEmail(account);
         return "redirect:/";
+    }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "content/account/login";
     }
 }

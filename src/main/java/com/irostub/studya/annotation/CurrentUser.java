@@ -1,4 +1,4 @@
-package com.irostub.studya.controller;
+package com.irostub.studya.annotation;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
