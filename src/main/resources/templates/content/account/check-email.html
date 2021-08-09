@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<body>
+<div layout:fragment="content" class="container">
+  <div class="py-5 text-center" th:if="${error}">
+    <p class="lead">스터디야 가입</p>
+    <div class="alert alert-danger" role="alert" th:text="${error}"></div>
+  </div>
+
+  <div class="py-5 text-center" th:if="${error==null}">
+    <p class="lead">스터디야 가입</p>
+    <h3>스터디야 서비스를 사용하려면 인증 이메일을 확인하세요.</h3>
+    <div class="py-2" th:text="${email}">유저 이메일</div>
+    <a class="btn btn-outline-primary" th:href="@{/resend-email-check}">인증 이메일 다시 보내기</a>
+  </div>
+</div>
+</body>
+</html>
