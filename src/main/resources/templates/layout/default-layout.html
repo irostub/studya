@@ -1,11 +1,8 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-<head th:replace="fragment/header::default-header">
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
+<th:block th:replace="fragment/header::default-header"/>
 <body class="bg-light">
 <div th:replace="fragment/navbar :: default-navbar"></div>
 <div layout:fragment="content"></div>

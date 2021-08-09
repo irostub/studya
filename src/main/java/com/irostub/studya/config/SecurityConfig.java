@@ -19,8 +19,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/email-login","/check-email-login", "/login-link").permitAll()
                 //프로필에 대해선 GET 메소드만 요청 가능
                 .mvcMatchers(HttpMethod.GET, "/profile/*").permitAll()
-
                 .anyRequest().authenticated();
+
+        http.formLogin().loginPage("/login");
+
+        http.logout().logoutSuccessUrl("/");
     }
 
     @Override
