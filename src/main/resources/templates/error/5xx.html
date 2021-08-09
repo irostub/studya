@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<body>
+<div class="container" layout:fragment="content">
+  <div class="py-5 row justify-content-center">
+    <h2>OOPS! SOMETHING WENT WRONG</h2>
+    <h5>5xx ERROR</h5>
+    <ul>
+      <li th:text="|timestamp: ${timestamp}|"></li>
+      <li th:text="|path: ${path}|"></li>
+      <li th:text="|status: ${status}|"></li>
+      <li th:text="|message: ${message}|"></li>
+      <li th:text="|error: ${error}|"></li>
+      <li th:text="|exception: ${exception}|"></li>
+      <li th:text="|errors: ${errors}|"></li>
+      <li th:text="|trace: ${trace}|"></li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
