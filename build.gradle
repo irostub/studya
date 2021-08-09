@@ -30,6 +30,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 
+	//thymeleaf layout
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.5.3'
+
 	//npm gradle 빌드 모듈 추가
 	implementation 'com.github.node-gradle:gradle-node-plugin:3.1.0'
 
@@ -51,6 +54,7 @@ node {
 	version = '16.3.0'
 	download = true
 	nodeModulesDir = file("${projectDir}/src/main/resources/static")
+
 }
 task copyFrontLib(type: Copy) {
 	from "${projectDir}/src/main/resources/static"
