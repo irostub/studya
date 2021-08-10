@@ -16,8 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -72,7 +70,6 @@ class AccountControllerTest {
                 .andExpect(unauthenticated());
     }
 
-    //폼 테스트 시 spring security 와 물릴 때 csrf 체크할 것.
     @Test
     @DisplayName("회원 가입 처리 - 입력값 오류")
     void signupSubmitWithWrongInput() throws Exception {
@@ -109,7 +106,7 @@ class AccountControllerTest {
     @DisplayName("회원가입 이메일 인증 정상")
     @Transactional
     void verifyEmail() throws Exception {
-        Account saveAccount = repository.findByNickname("irostub").orElse(null);
+        Account saveAccount = repository.findByNickname("irostub").orElseThrow(()->new Exception("닉네임으로 이름 찾기 실패"));
         saveAccount.generateEmailCheckToken();
 
         mockMvc.perform(get("/check-email-token")
