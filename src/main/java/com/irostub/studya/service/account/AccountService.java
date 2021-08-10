@@ -1,6 +1,6 @@
 package com.irostub.studya.service.account;
 
-import com.irostub.studya.controller.UserAccount;
+import com.irostub.studya.controller.adapter.UserAccount;
 import com.irostub.studya.controller.form.accountForm.SignupForm;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.repository.AccountRepository;
@@ -49,7 +49,6 @@ public class AccountService implements UserDetailsService {
 
     public void sendVerifyEmail(Account saveAccount) {
         saveAccount.generateEmailCheckToken();
-        accountRepository.save(saveAccount);
 
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(saveAccount.getEmail());
@@ -59,6 +58,7 @@ public class AccountService implements UserDetailsService {
         javaMailSender.send(mail);
     }
 
+    @Transactional
     public Account verifyEmail(String email, String token, Model model){
         Account findAccount = accountRepository.findByEmail(email).orElse(null);
         if (findAccount == null) {
@@ -71,7 +71,6 @@ public class AccountService implements UserDetailsService {
         }
         findAccount.setEmailVerified(true);
         findAccount.setJoinedAt(LocalDateTime.now());
-        findAccount = accountRepository.save(findAccount);
         model.addAttribute("count", accountRepository.count());
         model.addAttribute("name", findAccount.getNickname());
         return findAccount;

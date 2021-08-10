@@ -1,4 +1,4 @@
-package com.irostub.studya.controller;
+package com.irostub.studya.controller.adapter;
 
 import com.irostub.studya.domain.Account;
 import lombok.Getter;
