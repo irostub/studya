@@ -1,7 +1,7 @@
 package com.irostub.studya.service.account;
 
 import com.irostub.studya.controller.adapter.UserAccount;
-import com.irostub.studya.controller.form.accountForm.SignupForm;
+import com.irostub.studya.controller.form.SignupForm;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;

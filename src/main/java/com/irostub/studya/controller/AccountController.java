@@ -1,7 +1,7 @@
 package com.irostub.studya.controller;
 
 import com.irostub.studya.annotation.CurrentUser;
-import com.irostub.studya.controller.form.accountForm.SignupForm;
+import com.irostub.studya.controller.form.SignupForm;
 import com.irostub.studya.controller.validator.SignupValidator;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.repository.AccountRepository;

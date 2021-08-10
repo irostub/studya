@@ -1,4 +1,4 @@
-package com.irostub.studya.controller.form.accountForm;
+package com.irostub.studya.controller.form;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
