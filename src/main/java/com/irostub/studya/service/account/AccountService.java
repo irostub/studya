@@ -1,6 +1,7 @@
 package com.irostub.studya.service.account;
 
 import com.irostub.studya.controller.adapter.UserAccount;
+import com.irostub.studya.controller.form.ProfileForm;
 import com.irostub.studya.controller.form.SignupForm;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.repository.AccountRepository;
@@ -88,5 +89,15 @@ public class AccountService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findByNickname(username).orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
         return new UserAccount(account);
+    }
+
+    @Transactional
+    public void updateProfile(Account account, ProfileForm profileForm) {
+        account.setUrl(profileForm.getUrl());
+        account.setBio(profileForm.getBio());
+        account.setLocation(profileForm.getLocation());
+        account.setOccupation(profileForm.getOccupation());
+        //TODO:프로필 이미지 수정
+        accountRepository.save(account);
     }
 }

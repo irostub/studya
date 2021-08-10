@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div layout:fragment="content" class="container">
+  <div class="row justify-content-center mt-5 py-5">
+    <div class="col-sm-10">
+      <div class="row my-4">
+        <div class="col-sm-3">
+          <div th:with="currentMenu='profile'" class="list-group">
+            <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'profile'}? active" th:href="@{/settings/profile}">프로필</a>
+            <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'password'}? active" th:href="@{/settings/password}">패스워드</a>
+            <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'notifications'}? active" th:href="@{/settings/notifications}">알림</a>
+            <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tags'}? active" th:href="@{/settings/tags}">관심 주제</a>
+            <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'zones'}? active" th:href="@{/settings/zones}">활동 지역</a>
+            <a class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${currentMenu == 'account'}? active" th:href="@{/settings/account}">계정</a>
+          </div>
+        </div>
+        <div class="col-sm-9">
+          <div class="row">
+            <h2 class="col-sm-12" th:text="${account.nickname}"></h2>
+          </div>
+          <div class="row">
+            <div class="col-sm-8">
+              <form action="#" th:action="@{/settings/profile}" th:object="${profileForm}" method="post" novalidate>
+                <div class="form-group">
+                  <label for="bio">한 줄 소개</label>
+                  <input id="bio" type="text" th:field="*{bio}" class="form-control"
+                         placeholder="간략한 소개를 부탁합니다." aria-describedby="bioHelp" required>
+                  <small id="bioHelp" class="form-text text-muted">
+                    길지 않게 35자 이내로 입력하세요.
+                  </small>
+                  <small class="form-text text-danger" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}">
+                    조금 길어요.
+                  </small>
+                </div>
+
+                <div class="form-group">
+                  <label for="url">링크</label>
+                  <input id="url" type="url" th:field="*{url}" class="form-control"
+                         placeholder="https://www.studya.p-e.kr" aria-describedby="urlHelp" required>
+                  <small id="urlHelp" class="form-text text-muted">
+                    블로그, 유튜브 또는 포트폴리오나 좋아하는 웹 사이트 등 본인을 표현할 수 있는 링크를 추가하세요.
+                  </small>
+                  <small class="form-text text-danger" th:if="${#fields.hasErrors('url')}" th:errors="*{url}">
+                    옳바른 URL이 아닙니다. 예시처럼 입력해 주세요.
+                  </small>
+                </div>
+
+                <div class="form-group">
+                  <label for="company">직업</label>
+                  <input id="company" type="text" th:field="*{occupation}" class="form-control"
+                         placeholder="어떤 일을 하고 계신가요?" aria-describedby="occupationHelp" required>
+                  <small id="occupationHelp" class="form-text text-muted">
+                    개발자? 매니저? 취준생? 대표님?
+                  </small>
+                </div>
+
+                <div class="form-group">
+                  <label for="location">활동 지역</label>
+                  <input id="location" type="text" th:field="*{location}" class="form-control"
+                         placeholder="Seoul, Republic of Korea"
+                         aria-describedby="locationHelp" required>
+                  <small id="locationHelp" class="form-text text-muted">
+                    주요 활동(사는 곳이나 직장을 다니는 곳 또는 놀러 다니는 곳) 지역의 도시 이름을 알려주세요.
+                  </small>
+                </div>
+
+                <div class="form-group">
+                  <button class="btn btn-primary btn-block" type="submit"
+                          aria-describedby="submitHelp">수정하기</button>
+                </div>
+              </form>
+            </div>
+            <div class="col-sm-4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
