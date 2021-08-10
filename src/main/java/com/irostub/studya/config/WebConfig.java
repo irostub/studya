@@ -12,6 +12,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LogInterceptor())
                 .order(1)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/images/**", "/node_modules/**", "/favicon.*", "/webjars/**");
+                .excludePathPatterns("/images/**", "/node_modules/**", "/favicon.*", "/webjars/**", "/error/**");
     }
 }
