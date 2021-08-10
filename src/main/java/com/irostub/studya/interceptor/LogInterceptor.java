@@ -25,6 +25,6 @@ public class LogInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        log.info("[afterCompletion] [{}] [{}] [{}] [{}]", request.getAttribute("logUuid"), request.getRequestURI(), handler, ex);
+        log.info("[afterCompletion] [{}] [{}] [{}]", request.getAttribute("logUuid"), request.getRequestURI(), handler, ex);
     }
 }
