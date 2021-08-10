@@ -4,8 +4,10 @@ import com.irostub.studya.annotation.CurrentUser;
 import com.irostub.studya.controller.form.accountForm.SignupForm;
 import com.irostub.studya.controller.validator.SignupValidator;
 import com.irostub.studya.domain.Account;
+import com.irostub.studya.repository.AccountRepository;
 import com.irostub.studya.service.account.AccountService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,15 +15,18 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class AccountController {
 
     private final SignupValidator signupValidator;
     private final AccountService accountService;
+    private final AccountRepository accountRepository;
 
-    @InitBinder
-    void init(WebDataBinder binder) {
+    @InitBinder(value = "form")
+    public void init(WebDataBinder binder) {
+        log.info("webDataBinder init={}",binder);
         binder.addValidators(signupValidator);
     }
 
@@ -70,5 +75,14 @@ public class AccountController {
     @GetMapping("/login")
     public String loginPage() {
         return "content/account/login";
+    }
+
+    @GetMapping("/profile/{nickname}")
+    public String profilePage(@PathVariable String nickname, Model model, @CurrentUser Account account){
+
+        Account targetUser = accountRepository.findByNickname(nickname).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        model.addAttribute("targetUser", targetUser);
+        model.addAttribute("isOwner", targetUser.equals(account));
+        return "content/account/profile";
     }
 }

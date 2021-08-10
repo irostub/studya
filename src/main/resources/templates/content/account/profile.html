@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div layout:fragment="content" class="container">
+  <div class="row justify-content-center mt-5 py-5">
+    <div class="col-sm-10">
+      <div class="row">
+        <div class="col-sm-3">
+          <svg class="img-thumbnail rounded" width="150" height="150"
+               th:data-jdenticon-value="${targetUser.getNickname}"
+               th:if="${#strings.isEmpty(targetUser.profileImagePath)}"></svg>
+          <img class="img-thumbnail rounded"
+               th:if="${!#strings.isEmpty(targetUser.profileImagePath)}"
+               th:src="/" width="150" height="150"/>
+        </div>
+        <div class="col-sm-9">
+          <h1 class="display-4" th:text="${targetUser.nickname}">Nickname</h1>
+          <h5 class="lead" th:if="${isOwner}" th:text="${targetUser.bio?:'한 줄 소개를 추가하세요.'}"></h5>
+          <h5 class="lead" th:if="${!isOwner}" th:text="${targetUser.bio?:'소개 문구가 없습니다.'}"></h5>
+        </div>
+      </div>
+      <div class="row my-4">
+        <div class="col-sm-3">
+          <div class="list-group" id="list-tab" role="tablist">
+            <a class="list-group-item list-group-item-action active" id="list-home-list" data-toggle="list"
+               href="#list-home" role="tab" aria-controls="home">소개</a>
+            <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list"
+               href="#list-profile" role="tab" aria-controls="profile">스터디</a>
+          </div>
+        </div>
+        <div class="col-sm-9">
+          <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
+              <p th:if="${!#strings.isEmpty(targetUser.url)}">
+                            <span style="font-size: 20px;">
+                                <i class="fa fa-link col-1"></i>
+                            </span>
+                <span th:text="${targetUser.url}" class="col-11"></span>
+              </p>
+              <p th:if="${!#strings.isEmpty(targetUser.occupation)}">
+                            <span style="font-size: 20px;">
+                                <i class="fa fa-briefcase col-1"></i>
+                            </span>
+                <span th:text="${targetUser.occupation}" class="col-9"></span>
+              </p>
+              <p th:if="${!#strings.isEmpty(targetUser.location)}">
+                            <span style="font-size: 20px;">
+                                <i class="fa fa-location-arrow col-1"></i>
+                            </span>
+                <span th:text="${targetUser.location}" class="col-9"></span>
+              </p>
+              <p th:if="${isOwner}">
+                            <span style="font-size: 20px;">
+                                <i class="fa fa-envelope-o col-1"></i>
+                            </span>
+                <span th:text="${targetUser.email}" class="col-9"></span>
+              </p>
+              <p th:if="${isOwner || targetUser.emailVerified}">
+                            <span style="font-size: 20px;">
+                                <i class="fa fa-calendar-o col-1"></i>
+                            </span>
+                <span th:if="${isOwner && !targetUser.emailVerified}" class="col-9">
+                                <a href="#" th:href="@{/check-email}">가입을 완료하려면 이메일을 확인하세요.</a>
+                            </span>
+                <span th:text="${#temporals.format(targetUser.joinedAt, 'yyyy년 M월 가입')}" class="col-9"></span>
+              </p>
+              <div th:if="${isOwner}">
+                <a class="btn btn-outline-primary" href="#" th:href="@{/settings/profile}">프로필 수정</a>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list"> 스터디 내용
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
