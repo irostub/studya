@@ -28,8 +28,9 @@ public class SettingsController {
     }
 
     @PostMapping("/settings/profile")
-    public String profileUpdate(@CurrentUser Account account, @Validated @ModelAttribute ProfileForm profileForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String profileUpdate(@CurrentUser Account account, @Validated @ModelAttribute ProfileForm profileForm, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute(account);
             return "content/settings/profile";
         }
         accountService.updateProfile(account, profileForm);
