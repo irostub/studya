@@ -36,7 +36,8 @@ public class Account {
 
     private String location;
 
-    private String profileImagePath;
+    @Lob @Basic(fetch = FetchType.EAGER)
+    private String profileImage;
 
     private boolean studyCreatedByEmail;
 
