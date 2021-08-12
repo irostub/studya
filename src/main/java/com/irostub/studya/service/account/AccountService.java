@@ -91,13 +91,17 @@ public class AccountService implements UserDetailsService {
         return new UserAccount(account);
     }
 
-    @Transactional
     public void updateProfile(Account account, ProfileForm profileForm) {
         account.setUrl(profileForm.getUrl());
         account.setBio(profileForm.getBio());
         account.setLocation(profileForm.getLocation());
         account.setOccupation(profileForm.getOccupation());
         account.setProfileImage(profileForm.getProfileImage());
+        accountRepository.save(account);
+    }
+
+    public void updatePassword(Account account, String password) {
+        account.setPassword(passwordEncoder.encode(password));
         accountRepository.save(account);
     }
 }

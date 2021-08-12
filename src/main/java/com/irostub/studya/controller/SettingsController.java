@@ -1,10 +1,12 @@
 package com.irostub.studya.controller;
 
 import com.irostub.studya.annotation.CurrentUser;
+import com.irostub.studya.controller.form.PasswordForm;
 import com.irostub.studya.controller.form.ProfileForm;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.service.account.AccountService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class SettingsController {
@@ -35,13 +38,26 @@ public class SettingsController {
         }
         accountService.updateProfile(account, profileForm);
         redirectAttributes.addAttribute("nickname", account.getNickname());
-        redirectAttributes.addFlashAttribute("message","프로필이 수정되었습니다.");
+        redirectAttributes.addFlashAttribute("message", "프로필이 수정되었습니다.");
         return "redirect:/profile/{nickname}";
     }
 
     @GetMapping("/settings/password")
-    public String passwordUpdateForm() {
-        return null;
+    public String passwordUpdateForm(@ModelAttribute("form") PasswordForm passwordForm) {
+        log.info("12341234123412341234");
+        return "content/settings/password";
+    }
+
+    @PostMapping("/settings/password")
+    public String passwordUpdate(@CurrentUser Account account, @Validated @ModelAttribute("form") PasswordForm passwordForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if (!passwordForm.getPassword().equals(passwordForm.getCheckPassword())) {
+            bindingResult.rejectValue("password", "notEqual", "비밀번호 확인과 입력하신 비밀번호가 일치하지 않습니다.");
+            return "content/settings/password";
+        }
+        accountService.updatePassword(account, passwordForm.getPassword());
+        redirectAttributes.addAttribute("nickname", account.getNickname());
+        redirectAttributes.addFlashAttribute("message", "비밀번호가 수정되었습니다.");
+        return "redirect:/profile/{nickname}";
     }
 
     @GetMapping("/settings/notifications")
