@@ -6,7 +6,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 public class LogInterceptor implements HandlerInterceptor {
@@ -20,11 +20,15 @@ public class LogInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        log.info("[postHandle] [{}] [{}] [{}]",request.getAttribute("logUuid"), request.getRequestURI(), modelAndView == null ? "null" : modelAndView.getViewName());
+        if(modelAndView != null)
+            log.info("[postHandle] [{}] [{}] [{}] [{}]",request.getAttribute("logUuid"), request.getRequestURI(), modelAndView.getModel() , modelAndView.getViewName());
+        else
+            log.info("[postHandle] [{}] [{}]",request.getAttribute("logUuid"), request.getRequestURI());
+
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        log.info("[afterCompletion] [{}] [{}] [{}]", request.getAttribute("logUuid"), request.getRequestURI(), handler, ex);
+        log.info("[afterCompletion] [{}] [{}] [{}] [{}]", request.getAttribute("logUuid"), request.getRequestURI(), handler, ex);
     }
 }
