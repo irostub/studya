@@ -1,6 +1,7 @@
 package com.irostub.studya.controller;
 
 import com.irostub.studya.annotation.CurrentUser;
+import com.irostub.studya.controller.form.AccountForm;
 import com.irostub.studya.controller.form.NotificationForm;
 import com.irostub.studya.controller.form.PasswordForm;
 import com.irostub.studya.controller.form.ProfileForm;
@@ -96,7 +97,19 @@ public class SettingsController {
     }
 
     @GetMapping("/settings/account")
-    public String accountUpdateForm() {
-        return null;
+    public String accountUpdateForm(@CurrentUser Account account,@ModelAttribute("form") AccountForm accountForm) {
+        accountForm.setNickname(account.getNickname());
+        return "content/settings/account";
+    }
+
+    @PostMapping("/settings/account")
+    public String accountUpdate(@CurrentUser Account account, @Validated @ModelAttribute("form") AccountForm accountForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "content/settings/account";
+        }
+        accountService.updateNickname(account, accountForm.getNickname());
+        redirectAttributes.addFlashAttribute("message", "닉네임이 변경되었습니다.");
+        redirectAttributes.addAttribute("nickname", account.getNickname());
+        return "redirect:/profile/{nickname}";
     }
 }

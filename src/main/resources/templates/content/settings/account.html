@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div layout:fragment="content" class="container">
+  <div class="row justify-content-center mt-5 py-5">
+    <div class="col-sm-10">
+      <div class="row my-4">
+        <div class="col-sm-3">
+          <div th:replace="fragment/settings-list-group :: list-group('account')"></div>
+        </div>
+        <div class="col-sm-9">
+          <!--/*@thymesVar id="message" type="java.lang.String"*/-->
+          <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <div th:text="${message}"></div>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <h2>닉네임 변경</h2>
+          <form class="needs-validation" action="#" method="post"
+                novalidate
+                th:action="@{/settings/account}" th:object="${form}">
+            <div class="form-group">
+              <div class="alert alert-warning" role="alert">
+                닉네임을 변경하면 프로필 페이지 링크도 바뀝니다!
+              </div>
+              <div class="form-group">
+                <label for="nickname">한 줄 소개</label>
+                <input id="nickname" type="text" th:field="*{nickname}" class="form-control"
+                       placeholder="Nickname..." aria-describedby="nicknameHelp"
+                       required minlength="6" maxlength="20">
+                <small id="nicknameHelp" class="form-text text-muted">
+                  공백없이 문자와 숫자로만 6자 이상 20자 이내로 입력하세요. 가입후에 변경할 수 있습니다.
+                </small>
+                <small class="form-text text-danger" th:errors="*{nickname}">
+                  닉네임 조건에 맞지 않습니다.
+                </small>
+              </div>
+              <button id="btn-submit" class="btn btn-outline-primary" type="submit">변경하기</button>
+            </div>
+          </form>
+          <h2 class="pt-3 text-danger">계정 삭제</h2>
+          <div class="alert alert-danger" role="alert">
+            이 계정은 삭제할 수 없습니다.
+          </div>
+          <button class="btn btn-outline-danger" type="button" th:onclick="|location.href='@{/settings/account/delete}'|">계정 삭제</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div th:replace="fragment/form-validate-script :: form-validate-script"
+     layout:fragment="customScript"></div>
+</body>
+</html>
