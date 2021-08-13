@@ -357,3 +357,6 @@ dist
 .pnp.*
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij+all,windows,macos,gradle,git,node
+
+#mapstruct generated target
+/src/main/generated/
