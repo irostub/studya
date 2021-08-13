@@ -1,9 +1,11 @@
 package com.irostub.studya.controller;
 
 import com.irostub.studya.annotation.CurrentUser;
+import com.irostub.studya.controller.form.NotificationForm;
 import com.irostub.studya.controller.form.PasswordForm;
 import com.irostub.studya.controller.form.ProfileForm;
 import com.irostub.studya.domain.Account;
+import com.irostub.studya.mapper.AccountMapper;
 import com.irostub.studya.service.account.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +24,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class SettingsController {
 
     private final AccountService accountService;
+    private final AccountMapper accountMapper;
 
     @GetMapping("/settings/profile")
-    public String profileUpdateForm(@CurrentUser Account account, Model model) {
+    public String profileUpdateForm(@CurrentUser Account account, @ModelAttribute ProfileForm profileForm, Model model) {
         model.addAttribute(account);
-        model.addAttribute(new ProfileForm(account));
+        accountMapper.updateFromEntityToProfileForm(account, profileForm);
         return "content/settings/profile";
     }
 
@@ -44,12 +47,14 @@ public class SettingsController {
 
     @GetMapping("/settings/password")
     public String passwordUpdateForm(@ModelAttribute("form") PasswordForm passwordForm) {
-        log.info("12341234123412341234");
         return "content/settings/password";
     }
 
     @PostMapping("/settings/password")
     public String passwordUpdate(@CurrentUser Account account, @Validated @ModelAttribute("form") PasswordForm passwordForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "content/settings/password";
+        }
         if (!passwordForm.getPassword().equals(passwordForm.getCheckPassword())) {
             bindingResult.rejectValue("password", "notEqual", "비밀번호 확인과 입력하신 비밀번호가 일치하지 않습니다.");
             return "content/settings/password";
@@ -60,9 +65,20 @@ public class SettingsController {
         return "redirect:/profile/{nickname}";
     }
 
-    @GetMapping("/settings/notifications")
-    public String notificationsUpdateForm() {
-        return null;
+    @GetMapping("/settings/notification")
+    public String notificationsUpdateForm(@CurrentUser Account account, @ModelAttribute("form") NotificationForm notificationForm) {
+        accountMapper.updateFormEntityToNotificationForm(account, notificationForm);
+        return "content/settings/notification";
+    }
+
+    @PostMapping("/settings/notification")
+    public String notificationsUpdate(@CurrentUser Account account,@ModelAttribute("form")NotificationForm notificationForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if(bindingResult.hasErrors()){
+            return "content/settings/notification";
+        }
+        accountService.updateNotification(account, notificationForm);
+        redirectAttributes.addFlashAttribute("message", "알림 설정이 저장되었습니다.");
+        return "redirect:/settings/notification";
     }
 
     @GetMapping("/settings/tags")

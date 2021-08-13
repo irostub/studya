@@ -1,9 +1,11 @@
 package com.irostub.studya.service.account;
 
 import com.irostub.studya.controller.adapter.UserAccount;
+import com.irostub.studya.controller.form.NotificationForm;
 import com.irostub.studya.controller.form.ProfileForm;
 import com.irostub.studya.controller.form.SignupForm;
 import com.irostub.studya.domain.Account;
+import com.irostub.studya.mapper.AccountMapper;
 import com.irostub.studya.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -28,6 +30,7 @@ public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
+    private final AccountMapper accountMapper;
 
     @Transactional
     public Account processSaveNewAccount(SignupForm signupForm) {
@@ -92,16 +95,17 @@ public class AccountService implements UserDetailsService {
     }
 
     public void updateProfile(Account account, ProfileForm profileForm) {
-        account.setUrl(profileForm.getUrl());
-        account.setBio(profileForm.getBio());
-        account.setLocation(profileForm.getLocation());
-        account.setOccupation(profileForm.getOccupation());
-        account.setProfileImage(profileForm.getProfileImage());
+        accountMapper.updateFromProfileForm(profileForm, account);
         accountRepository.save(account);
     }
 
     public void updatePassword(Account account, String password) {
         account.setPassword(passwordEncoder.encode(password));
+        accountRepository.save(account);
+    }
+
+    public void updateNotification(Account account, NotificationForm notificationForm) {
+        accountMapper.updateFromNotificationForm(notificationForm, account);
         accountRepository.save(account);
     }
 }

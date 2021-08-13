@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div layout:fragment="content" class="container">
+  <div class="row justify-content-center mt-5 py-5">
+    <div class="col-sm-10">
+      <div class="row my-4">
+        <div class="col-sm-3">
+          <div th:replace="fragment/settings-list-group :: list-group('notification')"></div>
+        </div>
+        <div class="col-sm-9">
+          <!--/*@thymesVar id="message" type="java.lang.String"*/-->
+          <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <div th:text="${message}"></div>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <h2>알림 설정</h2>
+          <form class="needs-validation" action="#" method="post"
+                novalidate
+                th:action="@{/settings/notification}" th:object="${form}">
+            <div class="form-group">
+              <div class="alert alert-light" role="alert">
+                <strong><a href="#" th:href="@{/}">주요 활동 지역</a>에
+                  <a href="#" th:href="@{/}">관심있는 주제</a></strong>의 스터디가 만들어졌을 때 알림을 받을 방법을 설정하세요.
+              </div>
+              <div class="custom-control custom-switch d-inline-block mr-4">
+                <input type="checkbox" id="studyCreatedByEmail" th:field="*{studyCreatedByEmail}" class="custom-control-input">
+                <label class="custom-control-label" for="studyCreatedByEmail">이메일로 받기</label>
+              </div>
+              <div class="custom-control custom-switch d-inline-block">
+                <input type="checkbox" id="studyCreatedByWeb" th:field="*{studyCreatedByWeb}" class="custom-control-input">
+                <label class="custom-control-label" for="studyCreatedByWeb">웹으로 받기</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="alert alert-light" role="alert">
+                <strong><a href="#" th:href="@{/}">스터디 참가 신청</a></strong> 결과 알림을 받을 방법을 설정하세요.
+              </div>
+              <div class="custom-control custom-switch d-inline-block mr-4">
+                <input type="checkbox" id="studyEnrollmentResultByEmail" th:field="*{studyEnrollmentResultByEmail}" class="custom-control-input">
+                <label class="custom-control-label" for="studyEnrollmentResultByEmail">이메일로 받기</label>
+              </div>
+              <div class="custom-control custom-switch d-inline-block">
+                <input type="checkbox" id="studyEnrollmentResultByWeb" th:field="*{studyEnrollmentResultByWeb}" class="custom-control-input">
+                <label class="custom-control-label" for="studyEnrollmentResultByWeb">웹으로 받기</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="alert alert-light" role="alert">
+                <strong><a href="#" th:href="@{/}">관심있는 스터디</a></strong>에 대한 알림을 받을 방법을 설정하세요.
+              </div>
+              <div class="custom-control custom-switch d-inline-block mr-4">
+                <input type="checkbox" id="studyUpdatedByEmail" th:field="*{studyUpdatedByEmail}" class="custom-control-input">
+                <label class="custom-control-label" for="studyUpdatedByEmail">이메일로 받기</label>
+              </div>
+              <div class="custom-control custom-switch d-inline-block">
+                <input type="checkbox" id="studyUpdatedByWeb" th:field="*{studyUpdatedByWeb}" class="custom-control-input">
+                <label class="custom-control-label" for="studyUpdatedByWeb">웹으로 받기</label>
+              </div>
+            </div>
+            <button id="btn-submit" class="btn btn-outline-primary" type="submit">저장하기</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div th:replace="fragment/form-validate-script :: form-validate-script"
+     layout:fragment="customScript"></div>
+</body>
+</html>
