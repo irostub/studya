@@ -10,6 +10,10 @@ public class PasswordForm {
 
     @Length(min = 8, max = 50)
     @NotBlank
+    private String currentPassword;
+
+    @Length(min = 8, max = 50)
+    @NotBlank
     private String password;
 
     private String checkPassword;

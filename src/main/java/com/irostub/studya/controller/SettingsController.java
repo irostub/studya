@@ -9,6 +9,7 @@ import com.irostub.studya.mapper.AccountMapper;
 import com.irostub.studya.service.account.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,6 +26,7 @@ public class SettingsController {
 
     private final AccountService accountService;
     private final AccountMapper accountMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/settings/profile")
     public String profileUpdateForm(@CurrentUser Account account, @ModelAttribute ProfileForm profileForm, Model model) {
@@ -52,11 +54,13 @@ public class SettingsController {
 
     @PostMapping("/settings/password")
     public String passwordUpdate(@CurrentUser Account account, @Validated @ModelAttribute("form") PasswordForm passwordForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "content/settings/password";
-        }
         if (!passwordForm.getPassword().equals(passwordForm.getCheckPassword())) {
             bindingResult.rejectValue("password", "notEqual", "비밀번호 확인과 입력하신 비밀번호가 일치하지 않습니다.");
+        }
+        if (!passwordEncoder.matches(passwordForm.getCurrentPassword() ,account.getPassword())) {
+            bindingResult.rejectValue("currentPassword", "notEqual", "현재 비밀번호가 일치하지 않습니다.");
+        }
+        if (bindingResult.hasErrors()) {
             return "content/settings/password";
         }
         accountService.updatePassword(account, passwordForm.getPassword());
