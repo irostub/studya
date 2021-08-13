@@ -29,6 +29,9 @@ public class TestInitData {
                 .url("https://www.google.com")
                 .occupation("개발자")
                 .location("Seoul, Republic of Korea")
+                .studyEnrollmentResultByWeb(true)
+                .studyCreatedByWeb(true)
+                .studyUpdatedByWeb(true)
                 .build();
         accountRepository.save(account);
     }

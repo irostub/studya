@@ -40,14 +40,10 @@ public class AccountService implements UserDetailsService {
     }
 
     public Account saveNewAccount(SignupForm signupForm) {
-        Account account = Account.builder()
-                .email(signupForm.getEmail())
-                .nickname(signupForm.getNickname())
-                .password(passwordEncoder.encode(signupForm.getPassword()))
-                .studyUpdatedByWeb(true)
-                .studyCreatedByWeb(true)
-                .studyEnrollmentResultByWeb(true)
-                .build();
+        Account account = accountMapper.signupFormToAccount(signupForm);
+        account.setStudyCreatedByWeb(true);
+        account.setStudyEnrollmentResultByWeb(true);
+        account.setStudyUpdatedByWeb(true);
         return accountRepository.save(account);
     }
 

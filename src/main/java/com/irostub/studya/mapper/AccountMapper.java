@@ -2,6 +2,7 @@ package com.irostub.studya.mapper;
 
 import com.irostub.studya.controller.form.NotificationForm;
 import com.irostub.studya.controller.form.ProfileForm;
+import com.irostub.studya.controller.form.SignupForm;
 import com.irostub.studya.domain.Account;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -18,6 +19,7 @@ public interface AccountMapper{
     void updateFromProfileForm(ProfileForm form, @MappingTarget Account account);
     void updateFromNotificationForm(NotificationForm form, @MappingTarget Account account);
 
+    Account signupFormToAccount(SignupForm signupForm);
 
     //<D>void updateFromForm(D form, @MappingTarget Account account);
 }
