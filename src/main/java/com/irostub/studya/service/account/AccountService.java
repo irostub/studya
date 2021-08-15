@@ -20,9 +20,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -76,6 +79,14 @@ public class AccountService implements UserDetailsService {
         return findAccount;
     }
 
+    public void sendLoginMail(Account account) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setTo(account.getEmail());
+        simpleMailMessage.setSubject("studya 이메일 로그인 메일입니다.");
+        simpleMailMessage.setText("/login-by-email?email=" + account.getEmail() + "&token=" + account.getEmailCheckToken());
+        javaMailSender.send(simpleMailMessage);
+    }
+
     public void login(Account account) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 new UserAccount(account),
@@ -108,5 +119,9 @@ public class AccountService implements UserDetailsService {
     public void updateNickname(Account account, String nickname) {
         account.setNickname(nickname);
         accountRepository.save(account);
+    }
+
+    public Optional<Account> loginByEmail(String email, String token) {
+        return accountRepository.findByEmail(email).filter(account -> account.getEmailCheckToken().equals(token));
     }
 }

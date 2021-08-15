@@ -5,6 +5,8 @@
       layout:decorate="~{layout/default-layout}">
 <body class="bg-light">
 <!-- BEGIN 컨텐츠 파트 -->
+<!--/*@thymesVar id="message" type="java.lang.String"*/-->
+<!--/*@thymesVar id="error" type="java.lang.String"*/-->
 <th:block layout:fragment="content">
   <div class="alert alert-warning" role="alert"
        th:if="${account != null && !account.isEmailVerified()}">
@@ -12,9 +14,12 @@
   </div>
   <div class="container">
     <div class="py-5 text-center">
-      홈
-    </div>
-    <div class="row justify-content-center">
+      <div class="alert alert-warning" th:if="${message}">
+        <h2 th:text="${message}">이메일로 로그인하셨습니다. 비밀번호를 변경해주세요.</h2>
+      </div>
+      <div class="alert alert-danger" th:if="${error}">
+        <h2 class="text-danger" th:text="${error}">이메일로 로그인하셨습니다. 비밀번호를 변경해주세요.</h2>
+      </div>
     </div>
   </div>
 </th:block>

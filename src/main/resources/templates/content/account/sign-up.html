@@ -8,10 +8,11 @@
   <div class="py-5 text-center">
     <h2>계정 만들기</h2>
   </div>
+  <!--/*@thymesVar id="signupForm" type="com.irostub.studya.controller.form.SignupForm"*/-->
   <div class="row justify-content-center">
     <form class="needs-validation col-sm-6" action="#" method="post"
           novalidate
-          th:action="@{/sign-up}" th:object="${form}">
+          th:action="@{/sign-up}" th:object="${signupForm}">
       <div class="form-group">
         <label for="nickname">닉네임</label>
         <input id="nickname" type="text" class="form-control" autocomplete="off" placeholder="Nickname..."
