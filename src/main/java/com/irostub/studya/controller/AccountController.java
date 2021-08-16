@@ -84,6 +84,7 @@ public class AccountController {
     @GetMapping("/profile/{nickname}")
     public String profilePage(@PathVariable String nickname, Model model, @CurrentUser Account account){
         Account targetUser = accountRepository.findByNickname(nickname).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        model.addAttribute(account);
         model.addAttribute("targetUser", targetUser);
         model.addAttribute("isOwner", targetUser.equals(account));
         return "content/account/profile";
@@ -95,17 +96,22 @@ public class AccountController {
     }
 
     @PostMapping("/email-login")
-    public String emailLoginPage(@Validated @ModelAttribute EmailLoginForm emailLoginForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String emailLogin(@Validated @ModelAttribute EmailLoginForm emailLoginForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         Optional<Account> optionalAccount = accountRepository.findByEmail(emailLoginForm.getEmail());
         if (optionalAccount.isEmpty()) {
             bindingResult.rejectValue("email", "notExist", new Object[]{emailLoginForm.getEmail()}, null);
+        }
+        if (optionalAccount.isPresent()) {
+            if (!optionalAccount.get().isEmailCheckTokenBeforeOneHour()) {
+                bindingResult.reject("tokenAlive", "로그인 이메일은 한시간에 한번만 전송할 수 있습니다.");
+            }
         }
         if (bindingResult.hasErrors()) {
             return "content/account/email-login";
         }
         optionalAccount.ifPresent(accountService::sendLoginMail);
         redirectAttributes.addFlashAttribute("message", "이메일을 전송했습니다.");
-        return "redirect:/";
+        return "redirect:/email-login";
     }
 
     @GetMapping("/login-by-email")

@@ -14,11 +14,13 @@
   </div>
   <div class="container">
     <div class="py-5 text-center">
-      <div class="alert alert-warning" th:if="${message}">
-        <h2 th:text="${message}">이메일로 로그인하셨습니다. 비밀번호를 변경해주세요.</h2>
+      <div th:if="${message}">
+        <p class="lead">스터디야 이메일 로그인</p>
+        <h2 th:text="${message}">이메일로 로그인 했습니다. <a th:href="@{/settings/password}">비밀번호를 변경</a>하세요.</h2>
       </div>
-      <div class="alert alert-danger" th:if="${error}">
-        <h2 class="text-danger" th:text="${error}">이메일로 로그인하셨습니다. 비밀번호를 변경해주세요.</h2>
+      <div th:if="${error}">
+        <p class="lead">스터디야 이메일 로그인</p>
+        <h2 class="alert alert-danger" th:text="${error}">이메일 로그인에 실패했습니다.</h2>
       </div>
     </div>
   </div>

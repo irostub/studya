@@ -48,7 +48,7 @@
         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <!--/*@thymesVar id="account" type="com.irostub.studya.domain.Account"*/-->
           <svg class="img-thumbnail" th:if="${#strings.isEmpty(account?.profileImage)}" width="25" height="25" th:data-jdenticon-value="${#authentication.name}"></svg>
-          <img class="img-thumbnail rounded" th:if="${!#strings.isEmpty(account?.profileImage)}" th:src="${account.profileImage}" width="25" height="25"/>
+          <img class="img-thumbnail rounded" th:if="${!#strings.isEmpty(#authentication.get?.profileImage)}" th:src="${account.profileImage}" width="25" height="25"/>
         </a>
         <div class="dropdown-menu dropdown-menu-sm-right" aria-labelledby="userDropdown">
           <h6 class="dropdown-header">

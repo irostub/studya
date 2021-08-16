@@ -80,6 +80,8 @@ public class AccountService implements UserDetailsService {
     }
 
     public void sendLoginMail(Account account) {
+        account.generateEmailCheckToken();
+
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(account.getEmail());
         simpleMailMessage.setSubject("studya 이메일 로그인 메일입니다.");
