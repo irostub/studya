@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div layout:fragment="content" class="container">
+  <div class="row justify-content-center mt-5 py-5">
+    <div class="col-sm-10">
+      <div class="row my-4">
+        <div class="col-sm-3">
+          <div th:replace="fragment/settings-list-group :: list-group('tag')"></div>
+        </div>
+        <div class="col-sm-9">
+          <h2>관심있는 스터디 주제</h2>
+          <div class="row">
+            <div class="col-12">
+              <div class="alert alert-info" role="alert">
+                참여하고 싶은 스터디 주제를 입력해 주세요. 해당 주제의 스터디가 생기면 알림을 받을 수 있습니다. 태그를 입력하고 콤마(,) 또는 엔터를 입력하세요.
+              </div>
+              <input type="text" id="tag" name="tags-outside" class="tagify--outside"
+                     th:value="${#strings.listJoin(tags, ',')}" aria-describedby="tagHelp"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<th:block layout:fragment="customScript">
+  <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+  <script th:inline="javascript" type="application/javascript"></script>
+  <script type="application/javascript" th:inline="javascript">
+      //ajax 통신도 spring security 의 제한을 받기 때문에 csrf 토큰을 포함해줘야하므로 ajax 통신 시에 해당 토큰을 요청 헤더에 넣는다.
+      $(function () {
+          let csrfToken = /*[[${_csrf.token}]]*/ null;
+          let csrfHeader = /*[[${_csrf.headerName}]]*/ null;
+          $(document).ajaxSend(function (e, xhr, options) {
+              xhr.setRequestHeader(csrfHeader, csrfToken);
+          });
+      });
+  </script>
+  <script type="application/javascript" th:inline="javascript">
+      $(function () {
+          function tagRequest(url, tagTitle) {
+              $.ajax({
+                  dataType: "json",
+                  autocomplete: {
+                      enabled: true,
+                      rightKey: true,
+                  },
+                  contentType: "application/json; charset=utf-8",
+                  method: "POST",
+                  url: "/settings/tag" + url,
+                  data: JSON.stringify({'tagTitle': tagTitle})
+              }).done(function (data, status) {
+                  console.log("${data} and status is ${status}");
+              });
+          }
+
+          function mockAjax(value) {
+              let whitelist;
+              console.log(value);
+              if( value == "" || value == null || value == undefined || ( value != null && typeof value == "object" && !Object.keys(value).length )){
+                  whitelist=[];
+              }else{
+                  $.ajax({
+                      dataType: "json",
+                      contentType: "text/plain; charset=utf-8",
+                      method: "POST",
+                      async: false,
+                      url: "/settings/load-whitelist",
+                      data: value,
+                  }).done(function (result) {
+                      whitelist = result;
+                  });
+              }
+              var timeout;
+              clearTimeout(timeout); // abort last request
+              return new Promise(function (resolve, reject) {
+                  timeout = setTimeout(resolve, 1000, whitelist)
+              })
+          }
+
+          let input = document.querySelector('input[name=tags-outside]')
+          // init Tagify script on the above inputs
+          let tagify = new Tagify(input, {
+              whitelist: input.value.trim().split(/\s*,\s*/),
+              dropdown: {
+                  pattern: /^.{0,20}$/,
+                  position: "input",
+                  enabled: 0 // always opens dropdown when input gets focus
+              }
+          });
+
+          function onAdd(e) {
+              tagRequest("/add", e.detail.data.value);
+          }
+
+          function onRemove(e) {
+              tagRequest("/remove", e.detail.data.value);
+          }
+
+          function onInput(e) {
+              console.log("onInput: ", e.detail);
+              tagify.whitelist = null; // reset current whitelist
+              tagify.loading(true) // show the loader animation
+
+              // get new whitelist from a delayed mocked request (Promise)
+              mockAjax(e.detail.value)
+                  .then(function (result) {
+                      tagify.settings.whitelist = result.concat(tagify.value) // add already-existing tags to the new whitelist array
+                      console.log(tagify.settings.whitelist);
+
+                      tagify
+                          .loading(false)
+                          // render the suggestions dropdown.
+                          .dropdown.show(e.detail.value);
+                  })
+                  .catch(err => tagify.dropdown.hide())
+          }
+
+          tagify.on("add", onAdd);
+          tagify.on("remove", onRemove);
+          tagify.on("input", onInput);
+      })
+      ;
+  </script>
+</th:block>
+</body>
+</html>

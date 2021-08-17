@@ -5,9 +5,12 @@ import com.irostub.studya.controller.form.NotificationForm;
 import com.irostub.studya.controller.form.ProfileForm;
 import com.irostub.studya.controller.form.SignupForm;
 import com.irostub.studya.domain.Account;
+import com.irostub.studya.domain.Tag;
 import com.irostub.studya.mapper.AccountMapper;
 import com.irostub.studya.repository.AccountRepository;
+import com.irostub.studya.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,17 +23,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
+    private final TagRepository tagRepository;
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
     private final AccountMapper accountMapper;
@@ -125,5 +128,42 @@ public class AccountService implements UserDetailsService {
 
     public Optional<Account> loginByEmail(String email, String token) {
         return accountRepository.findByEmail(email).filter(account -> account.getEmailCheckToken().equals(token));
+    }
+
+    @Transactional
+    public void addTag(Account account, String title) {
+        Optional<Account> optionalAccount = accountRepository.findById(account.getId());
+        Tag tag = tagRepository.findByTitle(title).orElseGet(
+                ()-> tagRepository.save(Tag.builder().title(title).build()));
+        optionalAccount.ifPresent(a->a.getTags().add(tag));
+    }
+
+    public Set<Tag> getTags(Long id) {
+        return accountRepository.findById(id).orElseThrow().getTags();
+    }
+
+    @Transactional
+    public ResponseEntity<Object> removeTag(Account account, String title) {
+        Optional<Account> optionalAccount = accountRepository.findById(account.getId());
+        Optional<Tag> byTitle = tagRepository.findByTitle(title);
+
+        if(byTitle.isEmpty()) return ResponseEntity.badRequest().build();
+
+        optionalAccount.ifPresent(a ->
+            byTitle.ifPresent(t -> a.getTags().remove(t)));
+
+        return ResponseEntity.ok().build();
+    }
+
+    public List<Tag> findTags(String input) {
+        System.out.println("input = " + input);
+        List<Tag> byTitleStartsWith = tagRepository.findByTitleStartsWith(input);
+        if (byTitleStartsWith.isEmpty()) {
+            System.out.println("whynull????");
+        }
+        for (Tag tag : byTitleStartsWith) {
+            System.out.println(tag.getTitle());
+        }
+        return byTitleStartsWith;
     }
 }

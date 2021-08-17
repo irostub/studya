@@ -10,8 +10,8 @@
   <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'profile'}? active" th:href="@{/settings/profile}">프로필</a>
   <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'password'}? active" th:href="@{/settings/password}">패스워드</a>
   <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'notification'}? active" th:href="@{/settings/notification}">알림</a>
-  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tags'}? active" th:href="@{/settings/tags}">관심 주제</a>
-  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'zones'}? active" th:href="@{/settings/zones}">활동 지역</a>
+  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tag'}? active" th:href="@{/settings/tag}">관심 주제</a>
+  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'zone'}? active" th:href="@{/settings/zone}">활동 지역</a>
   <a class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${currentMenu == 'account'}? active" th:href="@{/settings/account}">계정</a>
 </div>
 </body>
