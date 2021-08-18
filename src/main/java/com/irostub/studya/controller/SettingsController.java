@@ -6,7 +6,9 @@ import com.irostub.studya.annotation.CurrentUser;
 import com.irostub.studya.controller.form.*;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.domain.Tag;
+import com.irostub.studya.domain.Zone;
 import com.irostub.studya.mapper.AccountMapper;
+import com.irostub.studya.service.ZoneService;
 import com.irostub.studya.service.account.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 public class SettingsController {
 
     private final AccountService accountService;
+    private final ZoneService zoneService;
     private final AccountMapper accountMapper;
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
@@ -98,9 +102,24 @@ public class SettingsController {
         return null;
     }
 
-    @GetMapping("/settings/zones")
-    public String zonesUpdateForm() {
-        return null;
+    @GetMapping("/settings/zone")
+    public String zonesUpdateForm(@CurrentUser Account account, Model model) {
+        Collection<String> zones = zoneFormatting(zoneService.loadZones());
+        Collection<String> currentAccountZone = zoneFormatting(zoneService.loadAccountZones(account));
+        model.addAttribute("zones", zones);
+        model.addAttribute("currentAccountZone", currentAccountZone);
+        model.addAttribute(account);
+        return "content/settings/zone";
+    }
+
+    private Collection<String> zoneFormatting(Collection<Zone> collection) {
+        return collection.stream().map(zone -> zone.getCity() + "(" + zone.getLocalNameOfCity() + ")/" + zone.getProvince()).collect(Collectors.toList());
+    }
+
+    @PostMapping("/settings/zone/add")
+    public ResponseEntity<Object> addZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
+        zoneService.addZone(account, zoneForm);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/settings/account")
@@ -148,6 +167,6 @@ public class SettingsController {
         System.out.println("input = " + input);
         List<String> collect = accountService.findTags(input).stream().map(Tag::getTitle).collect(Collectors.toList());
         String s = objectMapper.writeValueAsString(collect);
-        return new ResponseEntity<>(s,HttpStatus.OK);
+        return new ResponseEntity<>(s, HttpStatus.OK);
     }
 }

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div layout:fragment="content" class="container">
+  <div class="row justify-content-center mt-5 py-5">
+    <div class="col-sm-10">
+      <div class="row my-4">
+        <div class="col-sm-3">
+          <div th:replace="fragment/settings-list-group :: list-group('zone')"></div>
+        </div>
+        <div class="col-sm-9">
+          <h2>주요 활동 지역</h2>
+          <div class="row">
+            <div class="col-12">
+              <div class="alert alert-info" role="alert">
+                주로 스터디를 다닐 수 있는 지역을 등록하세요. 해당 지역에 스터디가 생기면 알림을 받을 수 있습니다. 시스템에 등록된 지역만 선택할 수 있습니다.
+              </div>
+              <input type="text" id="tag" name="tags-outside" th:value="${#strings.listJoin(currentAccountZone, ',')}" class="tagify--outside" aria-describedby="tagHelp"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<th:block layout:fragment="customScript">
+  <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+  <script th:inline="javascript" type="application/javascript"></script>
+  <script type="application/javascript" th:inline="javascript">
+      //ajax 통신도 spring security 의 제한을 받기 때문에 csrf 토큰을 포함해줘야하므로 ajax 통신 시에 해당 토큰을 요청 헤더에 넣는다.
+      $(function () {
+          let csrfToken = /*[[${_csrf.token}]]*/ null;
+          let csrfHeader = /*[[${_csrf.headerName}]]*/ null;
+          $(document).ajaxSend(function (e, xhr, options) {
+              xhr.setRequestHeader(csrfHeader, csrfToken);
+          });
+      });
+  </script>
+  <script type="application/javascript" th:inline="javascript">
+      $(function () {
+          function tagRequest(url, zoneTitle) {
+              $.ajax({
+                  dataType: "json",
+                  autocomplete: {
+                      enabled: true,
+                      rightKey: true,
+                  },
+                  contentType: "application/json; charset=utf-8",
+                  method: "POST",
+                  url: "/settings/zone" + url,
+                  data: JSON.stringify({'zoneTitle': zoneTitle})
+              }).done(function (data, status) {
+                  console.log("${data} and status is ${status}");
+              });
+          }
+
+          let input = document.querySelector('input[name=tags-outside]')
+          // init Tagify script on the above inputs
+          let tagify = new Tagify(input, {
+              whitelist:/*[[${zones}]]*/ null,
+              dropdown: {
+                  pattern: /^.{0,20}$/,
+                  position: "input",
+                  enabled: 0 // always opens dropdown when input gets focus
+              }
+          });
+
+          function onAdd(e) {
+              tagRequest("/add", e.detail.data.value);
+          }
+
+          function onRemove(e) {
+              tagRequest("/remove", e.detail.data.value);
+          }
+
+          tagify.on("add", onAdd);
+          tagify.on("remove", onRemove);
+
+      });
+  </script>
+</th:block>
+</body>
+</html>
