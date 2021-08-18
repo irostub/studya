@@ -46,10 +46,8 @@ public class AccountService implements UserDetailsService {
     }
 
     public Account saveNewAccount(SignupForm signupForm) {
+        signupForm.setPassword(passwordEncoder.encode(signupForm.getPassword()));
         Account account = accountMapper.signupFormToAccount(signupForm);
-        account.setStudyCreatedByWeb(true);
-        account.setStudyEnrollmentResultByWeb(true);
-        account.setStudyUpdatedByWeb(true);
         return accountRepository.save(account);
     }
 
@@ -157,13 +155,6 @@ public class AccountService implements UserDetailsService {
 
     public List<Tag> findTags(String input) {
         System.out.println("input = " + input);
-        List<Tag> byTitleStartsWith = tagRepository.findByTitleStartsWith(input);
-        if (byTitleStartsWith.isEmpty()) {
-            System.out.println("whynull????");
-        }
-        for (Tag tag : byTitleStartsWith) {
-            System.out.println(tag.getTitle());
-        }
-        return byTitleStartsWith;
+        return tagRepository.findByTitleStartsWith(input);
     }
 }

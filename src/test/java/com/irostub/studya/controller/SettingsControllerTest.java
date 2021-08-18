@@ -1,8 +1,12 @@
 package com.irostub.studya.controller;
 
-import com.irostub.studya.TestInitData;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.irostub.studya.controller.form.TagForm;
 import com.irostub.studya.domain.Account;
+import com.irostub.studya.domain.Tag;
 import com.irostub.studya.repository.AccountRepository;
+import com.irostub.studya.repository.TagRepository;
+import com.irostub.studya.service.account.AccountService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,25 +14,27 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ComponentScan(excludeFilters = @ComponentScan.Filter(type= FilterType.ASSIGNABLE_TYPE,classes = TestInitData.class))
 class SettingsControllerTest {
 
     @Autowired
@@ -39,6 +45,15 @@ class SettingsControllerTest {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    TagRepository tagRepository;
+
+    @Autowired
+    AccountService accountService;
 
     @BeforeEach
     void beforeEach() {
@@ -57,6 +72,7 @@ class SettingsControllerTest {
                 .studyEnrollmentResultByWeb(true)
                 .studyCreatedByWeb(true)
                 .studyUpdatedByWeb(true)
+                .tags(new HashSet<>())
                 .build();
         accountRepository.save(account);
     }
@@ -193,4 +209,59 @@ class SettingsControllerTest {
         assertThat(postAccount).isNull();
         assertThat(preAccount).isNotNull();
     }
+
+    @WithUserDetails(value = "irostub", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    @DisplayName("태그 수정 폼")
+    void updateTagForm() throws Exception {
+        mockMvc.perform(get("/settings/tag"))
+                .andExpect(view().name("content/settings/tag"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("tags"));
+    }
+
+    @Transactional
+    @WithUserDetails(value = "irostub", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    @DisplayName("계정에 태그 추가")
+    void addTag() throws Exception {
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("myTag");
+
+        mockMvc.perform(post("/settings/tag/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tagForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+
+        Tag tag = tagRepository.findByTitle(tagForm.getTagTitle()).get();
+        Account account = accountRepository.findByNickname("irostub").get();
+        assertThat(account.getTags().contains(tag)).isEqualTo(true);
+        assertThat(tag).isNotNull();
+    }
+
+    @Transactional
+    @WithUserDetails(value = "irostub", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    @DisplayName("계정의 태그 삭제")
+    void removeTag() throws Exception {
+        Account account = accountRepository.findByNickname("irostub").get();
+
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("myTag");
+        accountService.addTag(account, tagForm.getTagTitle());
+
+        Tag tag = tagRepository.findByTitle(tagForm.getTagTitle()).get();
+
+        assertThat(account.getTags().contains(tag)).isTrue();
+
+        mockMvc.perform(post("/settings/tag/remove")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tagForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+
+        assertThat(account.getTags().contains(tag)).isFalse();
+    }
+
 }

@@ -45,6 +45,7 @@ class AccountControllerTest {
 
     @BeforeEach
     void beforeEach() {
+        repository.deleteAll();
         Account account = Account.builder()
                 .email("irostub@mail.com")
                 .nickname("irostub")
@@ -66,7 +67,7 @@ class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("content/account/sign-up"))
-                .andExpect(model().attributeExists("form"))
+                .andExpect(model().attributeExists("signupForm"))
                 .andExpect(unauthenticated());
     }
 
@@ -108,7 +109,6 @@ class AccountControllerTest {
     void verifyEmail() throws Exception {
         Account saveAccount = repository.findByNickname("irostub").orElseThrow(()->new Exception("닉네임으로 이름 찾기 실패"));
         saveAccount.generateEmailCheckToken();
-
         mockMvc.perform(get("/check-email-token")
                         .param("email", saveAccount.getEmail())
                         .param("token", saveAccount.getEmailCheckToken()))

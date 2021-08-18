@@ -66,6 +66,7 @@
               console.log(value);
               if( value == "" || value == null || value == undefined || ( value != null && typeof value == "object" && !Object.keys(value).length )){
                   whitelist=[];
+
               }else{
                   $.ajax({
                       dataType: "json",
@@ -81,7 +82,7 @@
               var timeout;
               clearTimeout(timeout); // abort last request
               return new Promise(function (resolve, reject) {
-                  timeout = setTimeout(resolve, 1000, whitelist)
+                  timeout = setTimeout(resolve, 500, whitelist)
               })
           }
 
@@ -92,7 +93,7 @@
               dropdown: {
                   pattern: /^.{0,20}$/,
                   position: "input",
-                  enabled: 0 // always opens dropdown when input gets focus
+                  enabled: 1 // always opens dropdown when input gets focus
               }
           });
 
