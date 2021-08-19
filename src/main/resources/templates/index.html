@@ -16,7 +16,7 @@
     <div class="py-5 text-center">
       <div th:if="${message}">
         <p class="lead">스터디야 이메일 로그인</p>
-        <h2 th:text="${message}">이메일로 로그인 했습니다. <a th:href="@{/settings/password}">비밀번호를 변경</a>하세요.</h2>
+        <h2>이메일로 로그인 했습니다. <a th:href="@{/settings/password}">비밀번호를 변경</a>하세요.</h2>
       </div>
       <div th:if="${error}">
         <p class="lead">스터디야 이메일 로그인</p>

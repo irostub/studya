@@ -80,6 +80,7 @@ public class AccountService implements UserDetailsService {
         return findAccount;
     }
 
+    @Transactional
     public void sendLoginMail(Account account) {
         account.generateEmailCheckToken();
 
@@ -125,6 +126,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public Optional<Account> loginByEmail(String email, String token) {
+        System.out.println("email="+email+"token="+token);
         return accountRepository.findByEmail(email).filter(account -> account.getEmailCheckToken().equals(token));
     }
 
