@@ -1,6 +1,5 @@
 package com.irostub.studya.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.irostub.studya.controller.form.TagForm;
 import com.irostub.studya.controller.form.ZoneForm;

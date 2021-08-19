@@ -129,7 +129,8 @@ public class SettingsController {
     }
 
     @GetMapping("/settings/account")
-    public String accountUpdateForm(@CurrentUser Account account, @ModelAttribute("form") AccountForm accountForm) {
+    public String accountUpdateForm(@CurrentUser Account account, @ModelAttribute("form") AccountForm accountForm, Model model) {
+        model.addAttribute(account);
         accountForm.setNickname(account.getNickname());
         return "content/settings/account";
     }
