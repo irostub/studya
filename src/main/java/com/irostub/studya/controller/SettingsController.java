@@ -122,6 +122,12 @@ public class SettingsController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/settings/zone/remove")
+    public ResponseEntity<Object> removeZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
+        zoneService.removeZone(account, zoneForm);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/settings/account")
     public String accountUpdateForm(@CurrentUser Account account, @ModelAttribute("form") AccountForm accountForm) {
         accountForm.setNickname(account.getNickname());

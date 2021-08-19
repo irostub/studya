@@ -40,19 +40,31 @@ public class ZoneService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Zone> loadZones() {
         return zoneRepository.findAll();
     }
 
     public void addZone(Account account, ZoneForm zoneForm) {
-        String zoneTitle = zoneForm.getZoneTitle();
-        int i = zoneTitle.indexOf('(');
-        String city = zoneTitle.substring(0, i);
+        String city = parseCityFromZoneForm(zoneForm);
         Zone zone = zoneRepository.findByCity(city).orElseThrow(IllegalArgumentException::new);
         accountRepository.findById(account.getId()).orElseThrow(IllegalArgumentException::new).getZones().add(zone);
     }
 
+    public void removeZone(Account account, ZoneForm zoneForm) {
+        String city = parseCityFromZoneForm(zoneForm);
+        Zone zone = zoneRepository.findByCity(city).orElseThrow(IllegalArgumentException::new);
+        accountRepository.findById(account.getId()).orElseThrow(IllegalArgumentException::new).getZones().remove(zone);
+    }
+
+    @Transactional(readOnly = true)
     public Set<Zone> loadAccountZones(Account account) {
         return accountRepository.findById(account.getId()).orElseThrow(IllegalArgumentException::new).getZones();
+    }
+
+    private String parseCityFromZoneForm(ZoneForm zoneForm) {
+        String zoneTitle = zoneForm.getZoneTitle();
+        int i = zoneTitle.indexOf('(');
+        return zoneTitle.substring(0, i);
     }
 }

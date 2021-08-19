@@ -1,11 +1,16 @@
 package com.irostub.studya.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.irostub.studya.controller.form.TagForm;
+import com.irostub.studya.controller.form.ZoneForm;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.domain.Tag;
+import com.irostub.studya.domain.Zone;
 import com.irostub.studya.repository.AccountRepository;
 import com.irostub.studya.repository.TagRepository;
+import com.irostub.studya.repository.ZoneRepository;
+import com.irostub.studya.service.ZoneService;
 import com.irostub.studya.service.account.AccountService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,6 +59,12 @@ class SettingsControllerTest {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    ZoneRepository zoneRepository;
+
+    @Autowired
+    ZoneService zoneService;
+
     @BeforeEach
     void beforeEach() {
         accountRepository.deleteAll();
@@ -72,6 +82,7 @@ class SettingsControllerTest {
                 .studyEnrollmentResultByWeb(true)
                 .studyCreatedByWeb(true)
                 .studyUpdatedByWeb(true)
+                .zones(new HashSet<>())
                 .tags(new HashSet<>())
                 .build();
         accountRepository.save(account);
@@ -182,8 +193,8 @@ class SettingsControllerTest {
     @DisplayName("계정 닉네임 변경 성공")
     void updateAccount() throws Exception {
         mockMvc.perform(post("/settings/account")
-                .param("nickname","lilspicy")
-                .with(csrf()))
+                        .param("nickname", "lilspicy")
+                        .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/profile/lilspicy"))
                 .andExpect(flash().attributeExists("message"))
@@ -264,4 +275,57 @@ class SettingsControllerTest {
         assertThat(account.getTags().contains(tag)).isFalse();
     }
 
+    @WithUserDetails(value = "irostub", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    @DisplayName("지역 정보 폼")
+    void zoneView() throws Exception {
+        mockMvc.perform(get("/settings/zone"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("zones"))
+                .andExpect(model().attributeExists("currentAccountZone"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("content/settings/zone"));
+    }
+
+    @Transactional
+    @WithUserDetails(value = "irostub", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    @DisplayName("지역 정보 추가 성공")
+    void addZoneSuccess() throws Exception {
+        Zone zone = zoneRepository.findByCity("Andong").get();
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneTitle(String.format("%s(%s)/%s",zone.getCity(),zone.getLocalNameOfCity(),zone.getProvince()));
+
+        assertThat(zoneForm.getZoneTitle()).isEqualTo("Andong(안동시)/North Gyeongsang");
+
+        mockMvc.perform(post("/settings/zone/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(zoneForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+
+        accountRepository.findByNickname("irostub").get().getZones().contains(zone);
+    }
+
+    @Transactional
+    @WithUserDetails(value = "irostub", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    @DisplayName("지역 정보 삭제 성공")
+    void deleteZoneSuccess() throws Exception {
+        Account account = accountRepository.findByNickname("irostub").get();
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneTitle("Andong(안동시)/North Gyeongsang");
+        zoneService.addZone(account, zoneForm);
+
+        Zone zone = zoneRepository.findByCity("Andong").get();
+        assertThat(account.getZones().contains(zone)).isTrue();
+
+        mockMvc.perform(post("/settings/zone/remove")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(zoneForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+
+        assertThat(account.getZones().contains(zone)).isFalse();
+    }
 }

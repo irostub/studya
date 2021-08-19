@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.UUID;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class TestInitData {
     private final AccountRepository accountRepository;
