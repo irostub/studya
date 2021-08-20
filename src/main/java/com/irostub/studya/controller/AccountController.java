@@ -67,7 +67,7 @@ public class AccountController {
     }
 
     @GetMapping("/resend-email-check")
-    public String resendEmailCheck(@CurrentUser Account account, Model model) {
+    public String resendEmailCheck(@CurrentUser Account account, Model model){
         if (!account.isEmailCheckTokenBeforeOneHour()) {
             model.addAttribute("error", "한 시간에 한번만 이메일을 재전송할 수 있습니다.");
             return "content/account/check-email";

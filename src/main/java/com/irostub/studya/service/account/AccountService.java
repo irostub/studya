@@ -1,5 +1,6 @@
 package com.irostub.studya.service.account;
 
+import com.irostub.studya.config.AppProperties;
 import com.irostub.studya.controller.adapter.UserAccount;
 import com.irostub.studya.controller.form.NotificationForm;
 import com.irostub.studya.controller.form.ProfileForm;
@@ -9,6 +10,8 @@ import com.irostub.studya.domain.Tag;
 import com.irostub.studya.mapper.AccountMapper;
 import com.irostub.studya.repository.AccountRepository;
 import com.irostub.studya.repository.TagRepository;
+import com.irostub.studya.service.mail.MailMessage;
+import com.irostub.studya.service.mail.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -23,6 +26,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +42,9 @@ public class AccountService implements UserDetailsService {
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
     private final AccountMapper accountMapper;
+    private final MailService mailService;
+    private final TemplateEngine templateEngine;
+    private final AppProperties appProperties;
 
     @Transactional
     public Account processSaveNewAccount(SignupForm signupForm) {
@@ -48,18 +56,25 @@ public class AccountService implements UserDetailsService {
     public Account saveNewAccount(SignupForm signupForm) {
         signupForm.setPassword(passwordEncoder.encode(signupForm.getPassword()));
         Account account = accountMapper.signupFormToAccount(signupForm);
+        account.generateEmailCheckToken();
         return accountRepository.save(account);
     }
 
-    public void sendVerifyEmail(Account saveAccount) {
-        saveAccount.generateEmailCheckToken();
+    public void sendVerifyEmail(Account saveAccount){
+        Context context = new Context();
+        context.setVariable("nickname", saveAccount.getNickname());
+        context.setVariable("linkName", "인증하기");
+        context.setVariable("message","Studya 서비스를 이용하려면 아래 인증 링크를 클릭하세요.");
+        context.setVariable("domain",appProperties.getHost());
+        context.setVariable("link", "/check-email-token?email=" + saveAccount.getEmail() + "&token=" + saveAccount.getEmailCheckToken());
+        String htmlText = templateEngine.process("mail/auth-mail", context);
 
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo(saveAccount.getEmail());
-        mail.setSubject("Studya 인증 요청 메일입니다.");
-        mail.setText("/check-email-token?email=" + saveAccount.getEmail() + "&token=" + saveAccount.getEmailCheckToken());
-
-        javaMailSender.send(mail);
+        MailMessage mailMessage = MailMessage.builder()
+                .to(saveAccount.getEmail())
+                .subject("Studya 인증 요청 메일입니다.")
+                .text(htmlText)
+                .build();
+        mailService.send(mailMessage);
     }
 
     @Transactional
