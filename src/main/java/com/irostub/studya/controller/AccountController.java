@@ -1,6 +1,6 @@
 package com.irostub.studya.controller;
 
-import com.irostub.studya.annotation.CurrentUser;
+import com.irostub.studya.annotation.CurrentAccount;
 import com.irostub.studya.controller.form.EmailLoginForm;
 import com.irostub.studya.controller.form.SignupForm;
 import com.irostub.studya.controller.validator.SignupValidator;
@@ -61,13 +61,13 @@ public class AccountController {
     }
 
     @GetMapping("/check-email")
-    public String checkEmail(@CurrentUser Account account, Model model) {
+    public String checkEmail(@CurrentAccount Account account, Model model) {
         model.addAttribute("email", account.getEmail());
         return "content/account/check-email";
     }
 
     @GetMapping("/resend-email-check")
-    public String resendEmailCheck(@CurrentUser Account account, Model model){
+    public String resendEmailCheck(@CurrentAccount Account account, Model model){
         if (!account.isEmailCheckTokenBeforeOneHour()) {
             model.addAttribute("error", "한 시간에 한번만 이메일을 재전송할 수 있습니다.");
             return "content/account/check-email";
@@ -82,7 +82,7 @@ public class AccountController {
     }
 
     @GetMapping("/profile/{nickname}")
-    public String profilePage(@PathVariable String nickname, Model model, @CurrentUser Account account){
+    public String profilePage(@PathVariable String nickname, Model model, @CurrentAccount Account account){
         Account targetUser = accountRepository.findByNickname(nickname).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
         model.addAttribute(account);
         model.addAttribute("targetUser", targetUser);

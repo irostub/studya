@@ -2,7 +2,7 @@ package com.irostub.studya.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irostub.studya.annotation.CurrentUser;
+import com.irostub.studya.annotation.CurrentAccount;
 import com.irostub.studya.controller.form.*;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.domain.Tag;
@@ -39,14 +39,14 @@ public class SettingsController {
     private final ObjectMapper objectMapper;
 
     @GetMapping("/settings/profile")
-    public String profileUpdateForm(@CurrentUser Account account, @ModelAttribute ProfileForm profileForm, Model model) {
+    public String profileUpdateForm(@CurrentAccount Account account, @ModelAttribute ProfileForm profileForm, Model model) {
         model.addAttribute(account);
         accountMapper.updateFromEntityToProfileForm(account, profileForm);
         return "content/settings/profile";
     }
 
     @PostMapping("/settings/profile")
-    public String profileUpdate(@CurrentUser Account account, @Validated @ModelAttribute ProfileForm profileForm, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+    public String profileUpdate(@CurrentAccount Account account, @Validated @ModelAttribute ProfileForm profileForm, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute(account);
             return "content/settings/profile";
@@ -58,13 +58,13 @@ public class SettingsController {
     }
 
     @GetMapping("/settings/password")
-    public String passwordUpdateForm(@CurrentUser Account account, @ModelAttribute("form") PasswordForm passwordForm, Model model) {
+    public String passwordUpdateForm(@CurrentAccount Account account, @ModelAttribute("form") PasswordForm passwordForm, Model model) {
         model.addAttribute(account);
         return "content/settings/password";
     }
 
     @PostMapping("/settings/password")
-    public String passwordUpdate(@CurrentUser Account account, @Validated @ModelAttribute("form") PasswordForm passwordForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String passwordUpdate(@CurrentAccount Account account, @Validated @ModelAttribute("form") PasswordForm passwordForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         if (!passwordForm.getPassword().equals(passwordForm.getCheckPassword())) {
             bindingResult.rejectValue("password", "notEqual", "비밀번호 확인과 입력하신 비밀번호가 일치하지 않습니다.");
         }
@@ -81,14 +81,14 @@ public class SettingsController {
     }
 
     @GetMapping("/settings/notification")
-    public String notificationsUpdateForm(@CurrentUser Account account, @ModelAttribute("form") NotificationForm notificationForm, Model model) {
+    public String notificationsUpdateForm(@CurrentAccount Account account, @ModelAttribute("form") NotificationForm notificationForm, Model model) {
         model.addAttribute(account);
         accountMapper.updateFormEntityToNotificationForm(account, notificationForm);
         return "content/settings/notification";
     }
 
     @PostMapping("/settings/notification")
-    public String notificationsUpdate(@CurrentUser Account account, @ModelAttribute("form") NotificationForm notificationForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String notificationsUpdate(@CurrentAccount Account account, @ModelAttribute("form") NotificationForm notificationForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             return "content/settings/notification";
         }
@@ -103,7 +103,7 @@ public class SettingsController {
     }
 
     @GetMapping("/settings/zone")
-    public String zonesUpdateForm(@CurrentUser Account account, Model model) {
+    public String zonesUpdateForm(@CurrentAccount Account account, Model model) {
         Collection<String> zones = zoneFormatting(zoneService.loadZones());
         Collection<String> currentAccountZone = zoneFormatting(zoneService.loadAccountZones(account));
         model.addAttribute("zones", zones);
@@ -117,26 +117,26 @@ public class SettingsController {
     }
 
     @PostMapping("/settings/zone/add")
-    public ResponseEntity<Object> addZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
+    public ResponseEntity<Object> addZone(@CurrentAccount Account account, @RequestBody ZoneForm zoneForm) {
         zoneService.addZone(account, zoneForm);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/settings/zone/remove")
-    public ResponseEntity<Object> removeZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
+    public ResponseEntity<Object> removeZone(@CurrentAccount Account account, @RequestBody ZoneForm zoneForm) {
         zoneService.removeZone(account, zoneForm);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/settings/account")
-    public String accountUpdateForm(@CurrentUser Account account, @ModelAttribute("form") AccountForm accountForm, Model model) {
+    public String accountUpdateForm(@CurrentAccount Account account, @ModelAttribute("form") AccountForm accountForm, Model model) {
         model.addAttribute(account);
         accountForm.setNickname(account.getNickname());
         return "content/settings/account";
     }
 
     @PostMapping("/settings/account")
-    public String accountUpdate(@CurrentUser Account account, @Validated @ModelAttribute("form") AccountForm accountForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String accountUpdate(@CurrentAccount Account account, @Validated @ModelAttribute("form") AccountForm accountForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             return "content/settings/account";
         }
@@ -147,7 +147,7 @@ public class SettingsController {
     }
 
     @GetMapping("/settings/tag")
-    public String updateTagForm(@CurrentUser Account account, Model model) {
+    public String updateTagForm(@CurrentAccount Account account, Model model) {
         model.addAttribute(account);
         Set<Tag> tags = accountService.getTags(account.getId());
         model.addAttribute("tags", tags.stream().map(Tag::getTitle).collect(Collectors.toList()));
@@ -156,14 +156,14 @@ public class SettingsController {
 
     @PostMapping("/settings/tag/add")
     @ResponseBody
-    public ResponseEntity<Object> addTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+    public ResponseEntity<Object> addTag(@CurrentAccount Account account, @RequestBody TagForm tagForm) {
         String title = tagForm.getTagTitle();
         accountService.addTag(account, title);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/settings/tag/remove")
-    public ResponseEntity<Object> deleteTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+    public ResponseEntity<Object> deleteTag(@CurrentAccount Account account, @RequestBody TagForm tagForm) {
         String title = tagForm.getTagTitle();
         return accountService.removeTag(account, title);
     }
