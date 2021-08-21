@@ -14,8 +14,6 @@ import com.irostub.studya.service.mail.MailMessage;
 import com.irostub.studya.service.mail.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,7 +37,6 @@ import java.util.Set;
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final TagRepository tagRepository;
-    private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
     private final AccountMapper accountMapper;
     private final MailService mailService;
@@ -99,11 +96,20 @@ public class AccountService implements UserDetailsService {
     public void sendLoginMail(Account account) {
         account.generateEmailCheckToken();
 
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setTo(account.getEmail());
-        simpleMailMessage.setSubject("studya 이메일 로그인 메일입니다.");
-        simpleMailMessage.setText("/login-by-email?email=" + account.getEmail() + "&token=" + account.getEmailCheckToken());
-        javaMailSender.send(simpleMailMessage);
+        Context context = new Context();
+        context.setVariable("nickname", account.getNickname());
+        context.setVariable("linkName", "인증하기");
+        context.setVariable("message","Studya 서비스를 이용하려면 아래 인증 링크를 클릭하세요.");
+        context.setVariable("domain",appProperties.getHost());
+        context.setVariable("link", "/login-by-email?email=" + account.getEmail() + "&token=" + account.getEmailCheckToken());
+        String htmlText = templateEngine.process("mail/auth-mail", context);
+
+        MailMessage mailMessage = MailMessage.builder()
+                .to(account.getEmail())
+                .subject("studya 이메일 로그인 메일입니다.")
+                .text(htmlText)
+                .build();
+        mailService.send(mailMessage);
     }
 
     public void login(Account account) {
