@@ -68,14 +68,4 @@ public class StudyController {
         model.addAttribute(study);
         return "content/study/member";
     }
-
-    @GetMapping("/study/{path}/events")
-    public String studyEventView() {
-        return "content/study/event";
-    }
-
-    @GetMapping("/study/{path}/settings/description")
-    public String studySettingView() {
-        return "content/study/setting";
-    }
 }

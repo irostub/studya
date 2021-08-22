@@ -2,6 +2,7 @@ package com.irostub.studya.domain;
 
 import com.irostub.studya.controller.adapter.UserAccount;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -36,6 +37,7 @@ public class Study {
 
     private String title;
 
+    @Length(min=2, max = 100)
     private String shortDescription;
 
     @Lob
