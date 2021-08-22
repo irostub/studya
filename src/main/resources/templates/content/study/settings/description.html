@@ -14,7 +14,7 @@
         <div th:replace="fragment/study::study-settings-menu ('description')"></div>
       </div>
       <div class="col-8">
-        <form th:object="${study}" th:action="@{/study/*{path}/settings/description/add}" method="post" novalidate>
+        <form th:object="${study}" th:action="@{/study/*{path}/settings/description}" method="post" novalidate>
           <div class="form-group">
             <label for="shortDescription">짧은 소개</label>
             <input id="shortDescription" type="text" th:field="*{shortDescription}" class="form-control"
