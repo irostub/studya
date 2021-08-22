@@ -3,6 +3,8 @@
 <head th:fragment="default-header">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:300,400,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/node_modules/summernote/dist/summernote-bs4.min.css">
   <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/node_modules/font-awesome/css/font-awesome.min.css">
   <link rel="stylesheet" href="/node_modules/@yaireo/tagify/dist/tagify.css">
@@ -25,6 +27,24 @@
       .tagify--outside.tagify--focus .tagify__input{
           transition:0s;
           border-color: var(--tags-focus-border-color);
+      }
+
+      #study-logo {
+          height: 200px;
+          width: 100%;
+          overflow: hidden;
+          padding: 0;
+          margin: 0;
+      }
+
+      #study-logo img {
+          height: auto;
+          width: 100%;
+          overflow: hidden;
+      }
+
+      body {
+          font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
       }
   </style>
   <title>Studya</title>

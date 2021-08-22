@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<body class="bg-light">
+<th:block layout:fragment="content">
+  <div th:replace="fragment/study :: study-banner"></div>
+  <div class="container">
+    <div th:replace="fragment/study :: study-info"></div>
+    <div th:replace="fragment/study :: study-menu(studyMenu='info')"></div>
+    <div class="row px-3 justify-content-center">
+      <div class="col-10 pt-3" th:utext="${study.fullDescription}"></div>
+    </div>
+  </div>
+</th:block>
+<div layout:fragment="customScript">
+  <script th:replace="fragment/study :: tooltip"></script>
+</div>
+</body>
+</html>
