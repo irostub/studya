@@ -17,6 +17,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.mail.MessagingException;
 import java.util.Optional;
 
 @Slf4j
@@ -40,7 +41,7 @@ public class AccountController {
     }
 
     @PostMapping("/sign-up")
-    public String doSignup(@Validated @ModelAttribute SignupForm signupForm, BindingResult result) {
+    public String doSignup(@Validated @ModelAttribute SignupForm signupForm, BindingResult result) throws MessagingException {
         if (result.hasErrors()) {
             return "content/account/sign-up";
         }
@@ -67,7 +68,7 @@ public class AccountController {
     }
 
     @GetMapping("/resend-email-check")
-    public String resendEmailCheck(@CurrentAccount Account account, Model model){
+    public String resendEmailCheck(@CurrentAccount Account account, Model model) throws MessagingException {
         if (!account.isEmailCheckTokenBeforeOneHour()) {
             model.addAttribute("error", "한 시간에 한번만 이메일을 재전송할 수 있습니다.");
             return "content/account/check-email";
@@ -109,7 +110,13 @@ public class AccountController {
         if (bindingResult.hasErrors()) {
             return "content/account/email-login";
         }
-        optionalAccount.ifPresent(accountService::sendLoginMail);
+        optionalAccount.ifPresent(account -> {
+            try {
+                accountService.sendLoginMail(account);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        });
         redirectAttributes.addFlashAttribute("message", "이메일을 전송했습니다.");
         return "redirect:/email-login";
     }

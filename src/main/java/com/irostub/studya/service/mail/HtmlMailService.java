@@ -19,7 +19,7 @@ public class HtmlMailService implements MailService{
     private final JavaMailSender javaMailSender;
 
     @Override
-    public void send(MailMessage e){
+    public void send(MailMessage e) throws MessagingException {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, "UTF-8");
@@ -29,6 +29,7 @@ public class HtmlMailService implements MailService{
             javaMailSender.send(mimeMessage);
         }catch (MessagingException messagingException) {
             log.error("[HtmlMailService.send] MessagingException",messagingException);
+            throw new MessagingException(messagingException.toString());
         }
     }
 }

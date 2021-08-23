@@ -4,6 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/default-layout}">
 <body class="bg-light">
+<!--/*@thymesVar id="studyDescriptionForm" type="com.irostub.studya.controller.form.StudyDescriptionForm"*/-->
 <div layout:fragment="content">
   <div th:replace="fragment/study :: study-banner"></div>
   <div class="container">
@@ -14,7 +15,8 @@
         <div th:replace="fragment/study::study-settings-menu ('description')"></div>
       </div>
       <div class="col-8">
-        <form th:object="${study}" th:action="@{/study/*{path}/settings/description}" method="post" novalidate>
+        <h3 th:if="${message}" th:text="${message}"></h3>
+        <form th:object="${studyDescriptionForm}" th:action="@{|/study/${path}/settings/description|}" method="post" novalidate>
           <div class="form-group">
             <label for="shortDescription">짧은 소개</label>
             <input id="shortDescription" type="text" th:field="*{shortDescription}" class="form-control"
@@ -34,6 +36,11 @@
             </small>
             <small class="invalid-feedback">상세 소개를 입력하세요.</small>
             <small class="form-text text-danger" th:errors="*{fullDescription}">FullDescription Error</small>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary btn-block" type="submit"
+                    aria-describedby="submitHelp">소개 수정하기
+            </button>
           </div>
         </form>
       </div>

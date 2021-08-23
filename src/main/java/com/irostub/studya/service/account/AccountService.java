@@ -27,6 +27,7 @@ import org.springframework.ui.Model;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import javax.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +45,7 @@ public class AccountService implements UserDetailsService {
     private final AppProperties appProperties;
 
     @Transactional
-    public Account processSaveNewAccount(SignupForm signupForm) {
+    public Account processSaveNewAccount(SignupForm signupForm) throws MessagingException {
         Account account = saveNewAccount(signupForm);
         sendVerifyEmail(account);
         return account;
@@ -57,7 +58,7 @@ public class AccountService implements UserDetailsService {
         return accountRepository.save(account);
     }
 
-    public void sendVerifyEmail(Account saveAccount){
+    public void sendVerifyEmail(Account saveAccount) throws MessagingException {
         Context context = new Context();
         context.setVariable("nickname", saveAccount.getNickname());
         context.setVariable("linkName", "인증하기");
@@ -93,7 +94,7 @@ public class AccountService implements UserDetailsService {
     }
 
     @Transactional
-    public void sendLoginMail(Account account) {
+    public void sendLoginMail(Account account) throws MessagingException {
         account.generateEmailCheckToken();
 
         Context context = new Context();
