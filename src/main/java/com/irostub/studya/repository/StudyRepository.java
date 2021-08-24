@@ -16,4 +16,9 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
     //type fetch = 같이 조회될 대상 제외하곤 lazy 전략을 따름
     @EntityGraph(value = "Study.withAllRelations", type = EntityGraph.EntityGraphType.LOAD)
     Optional<Study> findByPath(String path);
+
+    @EntityGraph(value = "Study.withManagers", type = EntityGraph.EntityGraphType.LOAD)
+    Optional<Study> findStudyWithAccountByPath(String path);
+
+    Optional<Study> findStudyWithTagByPath(String path);
 }

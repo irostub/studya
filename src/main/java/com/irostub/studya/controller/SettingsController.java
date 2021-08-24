@@ -97,11 +97,6 @@ public class SettingsController {
         return "redirect:/settings/notification";
     }
 
-    @GetMapping("/settings/tags")
-    public String tagsUpdateForm() {
-        return null;
-    }
-
     @GetMapping("/settings/zone")
     public String zonesUpdateForm(@CurrentAccount Account account, Model model) {
         Collection<String> zones = zoneFormatting(zoneService.loadZones());

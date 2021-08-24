@@ -4,12 +4,16 @@ import com.irostub.studya.controller.form.StudyDescriptionForm;
 import com.irostub.studya.controller.form.StudyForm;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.domain.Study;
+import com.irostub.studya.domain.Tag;
 import com.irostub.studya.mapper.StudyMapper;
 import com.irostub.studya.repository.StudyRepository;
+import com.irostub.studya.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +21,7 @@ public class StudyService {
 
     private final StudyRepository studyRepository;
     private final StudyMapper studyMapper;
+    private final TagRepository tagRepository;
 
     @Transactional
     public Study addStudy(Account account, StudyForm studyForm) {
@@ -32,9 +37,13 @@ public class StudyService {
 
     public Study getStudyToUpdate(Account account, String path) {
         Study study = getStudy(path);
-        if(!isManager(study, account)){
-            throw new AccessDeniedException("접근 권한이 없습니다.");
-        }
+        checkIfManager(account, study);
+        return study;
+    }
+
+    public Study getStudyWithManager(Account account, String path) {
+        Study study = studyRepository.findStudyWithAccountByPath(path).orElseThrow(IllegalArgumentException::new);
+        checkIfManager(account, study);
         return study;
     }
 
@@ -44,5 +53,46 @@ public class StudyService {
 
     private boolean isManager(Study study, Account account) {
         return study.getManagers().contains(account);
+    }
+
+    @Transactional
+    public void enableBanner(Account account, String path) {
+        getStudyWithManager(account, path).setUseBanner(true);
+    }
+
+    @Transactional
+    public void disableBanner(Account account, String path) {
+        getStudyWithManager(account, path).setUseBanner(false);
+    }
+
+    @Transactional
+    public void updateBannerImage(Account account, String path, String image) {
+        Study study = getStudyWithManager(account, path);
+        study.setImage(image);
+    }
+
+    @Transactional
+    public void addTag(Study study, String tagTitle) {
+        Tag tag = tagRepository.findByTitle(tagTitle).orElseGet(() -> tagRepository.save(Tag.builder().title(tagTitle).build()));
+        Set<Tag> tags = study.getTags();
+        tags.add(tag);
+    }
+
+    public Study getStudyToUpdateTag(Account account, String path) {
+        Study study = studyRepository.findStudyWithTagByPath(path).orElseThrow(IllegalArgumentException::new);
+        checkIfManager(account, study);
+        return study;
+    }
+
+    private void checkIfManager(Account account, Study study) {
+        if (!isManager(study, account)) {
+            throw new AccessDeniedException("해당 기능을 사용할 수 없습니다.");
+        }
+    }
+
+    @Transactional
+    public void removeTag(Study study, String tagTitle) {
+        Tag tag = tagRepository.findByTitle(tagTitle).orElseThrow(IllegalArgumentException::new);
+        study.getTags().remove(tag);
     }
 }

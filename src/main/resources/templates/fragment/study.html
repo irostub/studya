@@ -147,5 +147,14 @@
         $('[data-toggle="tooltip"]').tooltip()
     })
 </script>
+
+<div th:fragment="message" th:if="${message}" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+  <span th:text="${message}">완료</span>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+
 </body>
 </html>

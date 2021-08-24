@@ -5,6 +5,8 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +18,12 @@ import java.util.Set;
                 @NamedAttributeNode("members"),
                 @NamedAttributeNode("tags"),
                 @NamedAttributeNode("zones")
+        }
+)
+@NamedEntityGraph(
+        name="Study.withManagers",
+        attributeNodes = {
+                @NamedAttributeNode("managers")
         }
 )
 @Entity
@@ -79,5 +87,9 @@ public class Study {
 
     public boolean isManager(UserAccount userAccount) {
         return this.managers.contains(userAccount.getAccount());
+    }
+
+    public String getEncodedPath() {
+        return URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 }

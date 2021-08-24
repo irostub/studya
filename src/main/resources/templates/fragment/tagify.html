@@ -1,35 +1,13 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/default-layout}">
-<body class="bg-light">
-<div layout:fragment="content" class="container">
-  <div class="row justify-content-center mt-5 py-5">
-    <div class="col-sm-10">
-      <div class="row my-4">
-        <div class="col-sm-3">
-          <div th:replace="fragment/settings-list-group :: list-group('tag')"></div>
-        </div>
-        <div class="col-sm-9">
-          <h2>관심있는 스터디 주제</h2>
-          <div class="row">
-            <div class="col-12">
-              <div class="alert alert-info" role="alert">
-                참여하고 싶은 스터디 주제를 입력해 주세요. 해당 주제의 스터디가 생기면 알림을 받을 수 있습니다. 태그를 입력하고 콤마(,) 또는 엔터를 입력하세요.
-              </div>
-              <input type="text" id="tag" name="tags-outside" class="tagify--outside"
-                     th:value="${#strings.listJoin(tags, ',')}" aria-describedby="tagHelp"/>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<th:block layout:fragment="customScript">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div th:fragment="update-tags (baseUrl)">
   <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
-  <script th:replace="fragment/common :: ajax-csrf-header"></script>
   <script type="application/javascript" th:inline="javascript">
       $(function () {
           function tagRequest(url, tagTitle) {
@@ -41,7 +19,7 @@
                   },
                   contentType: "application/json; charset=utf-8",
                   method: "POST",
-                  url: "/settings/tag" + url,
+                  url: "[(${baseUrl})]" + url,
                   data: JSON.stringify({'tagTitle': tagTitle})
               }).done(function (data, status) {
                   console.log("${data} and status is ${status}");
@@ -117,6 +95,6 @@
       })
       ;
   </script>
-</th:block>
+</div>
 </body>
 </html>
