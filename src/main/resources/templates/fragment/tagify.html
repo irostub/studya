@@ -29,10 +29,10 @@
           function mockAjax(value) {
               let whitelist;
               console.log(value);
-              if( value == "" || value == null || value == undefined || ( value != null && typeof value == "object" && !Object.keys(value).length )){
-                  whitelist=[];
+              if (value == "" || value == null || value == undefined || (value != null && typeof value == "object" && !Object.keys(value).length)) {
+                  whitelist = [];
 
-              }else{
+              } else {
                   $.ajax({
                       dataType: "json",
                       contentType: "text/plain; charset=utf-8",
@@ -92,9 +92,54 @@
           tagify.on("add", onAdd);
           tagify.on("remove", onRemove);
           tagify.on("input", onInput);
-      })
-      ;
+      });
   </script>
 </div>
+<div th:fragment="update-zones (baseUrl)">
+  <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+  <script type="application/javascript" th:inline="javascript">
+      $(function () {
+          function tagRequest(url, zoneTitle) {
+              $.ajax({
+                  dataType: "json",
+                  autocomplete: {
+                      enabled: true,
+                      rightKey: true,
+                  },
+                  contentType: "application/json; charset=utf-8",
+                  method: "POST",
+                  url: "[(${baseUrl})]" + url,
+                  data: JSON.stringify({'zoneTitle': zoneTitle})
+              }).done(function (data, status) {
+                  console.log("${data} and status is ${status}");
+              });
+          }
+
+          let input = document.querySelector('input[name=tags-outside]')
+          // init Tagify script on the above inputs
+          let tagify = new Tagify(input, {
+              whitelist:/*[[${zones}]]*/ null,
+              dropdown: {
+                  pattern: /^.{0,20}$/,
+                  position: "input",
+                  enabled: 0 // always opens dropdown when input gets focus
+              }
+          });
+
+          function onAdd(e) {
+              tagRequest("/add", e.detail.data.value);
+          }
+
+          function onRemove(e) {
+              tagRequest("/remove", e.detail.data.value);
+          }
+
+          tagify.on("add", onAdd);
+          tagify.on("remove", onRemove);
+
+      });
+  </script>
+</div>
+
 </body>
 </html>

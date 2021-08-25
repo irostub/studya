@@ -26,6 +26,18 @@ import java.util.Set;
                 @NamedAttributeNode("managers")
         }
 )
+@NamedEntityGraph(
+        name="Study.withTags",
+        attributeNodes = {
+                @NamedAttributeNode("tags")
+        }
+)
+@NamedEntityGraph(
+        name="Study.withZones",
+        attributeNodes = {
+                @NamedAttributeNode("zones")
+        }
+)
 @Entity
 @Getter @Setter @EqualsAndHashCode(of="id")
 @Builder @AllArgsConstructor @NoArgsConstructor

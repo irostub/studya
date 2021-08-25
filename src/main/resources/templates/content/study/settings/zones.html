@@ -3,26 +3,38 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/default-layout}">
-<head>
-  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
-</head>
 <body class="bg-light">
-<div layout:fragment="content" class="container">
-  <div class="row justify-content-center mt-5 py-5">
-    <div class="col-sm-10">
-      <div class="row my-4">
-        <div class="col-sm-3">
-          <div th:replace="fragment/study::study-settings-menu ('zones')"></div>
+<!--/*@thymesVar id="studyDescriptionForm" type="com.irostub.studya.controller.form.StudyDescriptionForm"*/-->
+<div layout:fragment="content">
+  <div th:replace="fragment/study :: study-banner"></div>
+  <div class="container">
+    <div th:replace="fragment/study :: study-info"></div>
+    <div th:replace="fragment/study :: study-menu(studyMenu='settings')"></div>
+    <div class="row justify-content-center mt-5">
+      <div class="col-2">
+        <div th:replace="fragment/study::study-settings-menu ('zones')"></div>
+      </div>
+      <div class="col-8">
+        <div class="row">
+          <h2 class="col-sm-12">주요 활동 지역</h2>
         </div>
-        <div class="col-sm-9">
-
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="alert alert-info" role="alert">
+              주로 스터디를 하는 지역을 등록하세요.<br/>
+              시스템에 등록된 지역만 선택할 수 있습니다.
+            </div>
+            <input id="tags" type="text" name="tags-outside" th:value="${#strings.listJoin(currentStudyZones, ',')}"
+                   class="tagify--outside" aria-describedby="tagHelp">
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
 <th:block layout:fragment="customScript">
-  <th:block th:replace="fragment/study :: editor-script"></th:block>
+  <script th:replace="fragment/common :: ajax-csrf-header"></script>
+  <script th:replace="fragment/tagify :: update-zones (baseUrl='/study/'+ ${study.path} + '/settings/zones')"></script>
 </th:block>
 </body>
 </html>

@@ -3,11 +3,14 @@ package com.irostub.studya.controller;
 import com.irostub.studya.annotation.CurrentAccount;
 import com.irostub.studya.controller.form.StudyDescriptionForm;
 import com.irostub.studya.controller.form.TagForm;
+import com.irostub.studya.controller.form.ZoneForm;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.domain.Study;
 import com.irostub.studya.domain.Tag;
+import com.irostub.studya.domain.Zone;
 import com.irostub.studya.mapper.StudyMapper;
 import com.irostub.studya.repository.StudyRepository;
+import com.irostub.studya.repository.ZoneRepository;
 import com.irostub.studya.service.StudyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +37,7 @@ public class StudySettingsController {
     private final StudyRepository studyRepository;
     private final StudyService studyService;
     private final StudyMapper studyMapper;
+    private final ZoneRepository zoneRepository;
 
     @GetMapping("/description")
     public String updateDescriptionForm(@CurrentAccount Account account, @ModelAttribute StudyDescriptionForm studyDescriptionForm, @PathVariable String path, Model model) {
@@ -115,7 +120,47 @@ public class StudySettingsController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/zones")
+    public String zonesView(@CurrentAccount Account account, @PathVariable String path, Model model) {
+        Study study = studyService.getStudyToUpdateZone(account, path);
+        Collection<String> currentStudyZones = zoneFormatting(study.getZones());
+        Collection<String> zones = zoneFormatting(zoneRepository.findAll());
+        model.addAttribute(study);
+        model.addAttribute(account);
+        model.addAttribute("zones", zones);
+        model.addAttribute("currentStudyZones", currentStudyZones);
+        return "content/study/settings/zones";
+    }
+
+    @PostMapping("/zones/add")
+    public ResponseEntity<Object> addZone(@CurrentAccount Account account, @RequestBody ZoneForm zoneForm, @PathVariable String path) {
+        String city = parseCityFromZoneForm(zoneForm);
+        Study study = studyService.getStudyToUpdateZone(account, path);
+        studyService.addZone(study, city);
+        log.info(city);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/zones/remove")
+    public ResponseEntity<Object> removeZone(@CurrentAccount Account account, @RequestBody ZoneForm zoneForm, @PathVariable String path) {
+        String city = parseCityFromZoneForm(zoneForm);
+        Study study = studyService.getStudyToUpdateZone(account, path);
+        studyService.removeZone(study, city);
+        return ResponseEntity.ok().build();
+    }
+
+    private Collection<String> zoneFormatting(Collection<Zone> collection) {
+        return collection.stream().map(zone -> zone.getCity() + "(" + zone.getLocalNameOfCity() + ")/" + zone.getProvince()).collect(Collectors.toList());
+    }
+
     private String encodePath(String path) {
         return URLEncoder.encode(path, StandardCharsets.UTF_8);
+    }
+
+    private String parseCityFromZoneForm(ZoneForm zoneForm) {
+        String zoneTitle = zoneForm.getZoneTitle();
+        int i = zoneTitle.indexOf('(');
+        return zoneTitle.substring(0, i);
     }
 }

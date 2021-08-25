@@ -5,9 +5,11 @@ import com.irostub.studya.controller.form.StudyForm;
 import com.irostub.studya.domain.Account;
 import com.irostub.studya.domain.Study;
 import com.irostub.studya.domain.Tag;
+import com.irostub.studya.domain.Zone;
 import com.irostub.studya.mapper.StudyMapper;
 import com.irostub.studya.repository.StudyRepository;
 import com.irostub.studya.repository.TagRepository;
+import com.irostub.studya.repository.ZoneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class StudyService {
     private final StudyRepository studyRepository;
     private final StudyMapper studyMapper;
     private final TagRepository tagRepository;
+    private final ZoneRepository zoneRepository;
 
     @Transactional
     public Study addStudy(Account account, StudyForm studyForm) {
@@ -94,5 +97,23 @@ public class StudyService {
     public void removeTag(Study study, String tagTitle) {
         Tag tag = tagRepository.findByTitle(tagTitle).orElseThrow(IllegalArgumentException::new);
         study.getTags().remove(tag);
+    }
+
+    public Study getStudyToUpdateZone(Account account, String path) {
+        Study study = studyRepository.findStudyWithZoneByPath(path).orElseThrow(IllegalArgumentException::new);
+        checkIfManager(account, study);
+        return study;
+    }
+
+    @Transactional
+    public void addZone(Study study, String city) {
+        Zone zone = zoneRepository.findByCity(city).orElseThrow(IllegalArgumentException::new);
+        study.getZones().add(zone);
+    }
+
+    @Transactional
+    public void removeZone(Study study, String city) {
+        Zone zone = zoneRepository.findByCity(city).orElseThrow(IllegalArgumentException::new);
+        study.getZones().remove(zone);
     }
 }

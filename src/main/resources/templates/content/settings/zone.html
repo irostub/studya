@@ -27,60 +27,7 @@
   </div>
 </div>
 <th:block layout:fragment="customScript">
-  <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
-  <script th:inline="javascript" type="application/javascript"></script>
-  <script type="application/javascript" th:inline="javascript">
-      //ajax 통신도 spring security 의 제한을 받기 때문에 csrf 토큰을 포함해줘야하므로 ajax 통신 시에 해당 토큰을 요청 헤더에 넣는다.
-      $(function () {
-          let csrfToken = /*[[${_csrf.token}]]*/ null;
-          let csrfHeader = /*[[${_csrf.headerName}]]*/ null;
-          $(document).ajaxSend(function (e, xhr, options) {
-              xhr.setRequestHeader(csrfHeader, csrfToken);
-          });
-      });
-  </script>
-  <script type="application/javascript" th:inline="javascript">
-      $(function () {
-          function tagRequest(url, zoneTitle) {
-              $.ajax({
-                  dataType: "json",
-                  autocomplete: {
-                      enabled: true,
-                      rightKey: true,
-                  },
-                  contentType: "application/json; charset=utf-8",
-                  method: "POST",
-                  url: "/settings/zone" + url,
-                  data: JSON.stringify({'zoneTitle': zoneTitle})
-              }).done(function (data, status) {
-                  console.log("${data} and status is ${status}");
-              });
-          }
-
-          let input = document.querySelector('input[name=tags-outside]')
-          // init Tagify script on the above inputs
-          let tagify = new Tagify(input, {
-              whitelist:/*[[${zones}]]*/ null,
-              dropdown: {
-                  pattern: /^.{0,20}$/,
-                  position: "input",
-                  enabled: 0 // always opens dropdown when input gets focus
-              }
-          });
-
-          function onAdd(e) {
-              tagRequest("/add", e.detail.data.value);
-          }
-
-          function onRemove(e) {
-              tagRequest("/remove", e.detail.data.value);
-          }
-
-          tagify.on("add", onAdd);
-          tagify.on("remove", onRemove);
-
-      });
-  </script>
+  <script th:fragment="update-zones (baseUrl='/settings/zone')"></script>
 </th:block>
 </body>
 </html>
