@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<body class="bg-light">
+<!--/*@thymesVar id="studyDescriptionForm" type="com.irostub.studya.controller.form.StudyDescriptionForm"*/-->
+<div layout:fragment="content">
+  <div th:replace="fragment/study :: study-banner"></div>
+  <div class="container">
+    <div th:replace="fragment/study :: study-info"></div>
+    <div th:replace="fragment/study :: study-menu(studyMenu='settings')"></div>
+    <div class="row justify-content-center mt-5">
+      <div class="col-2">
+        <div th:replace="fragment/study::study-settings-menu ('study')"></div>
+      </div>
+      <div class="col-8">
+        <div class="row">
+          <h2 class="col-sm-12">스터디 공개 및 종료</h2>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="alert alert-warning" role="alert">
+              스터디 활동을 마쳤다면 스터디를 종료하세요.<br/>
+              스터디를 종료하면 더이상 팀원을 모집하거나 모임을 만들 수 없으며, 스터디 경로와 이름을 수정할 수 없습니다.<br/>
+              스터디 모임과 참여한 팀원의 기록은 그대로 보관합니다.
+            </div>
+            <form th:if="${!study.published}" th:action="@{|/study/${path}/settings/study/publish|}" th:method="post">
+              <button class="btn btn-outline-warning" type="submit">스터디 공개</button>
+            </form>
+
+            <form th:if="${study.published && !study.closed}" th:action="@{|/study/${path}/settings/study/close|}"
+                  th:method="post">
+              <button class="btn btn-outline-danger" type="submit">스터디 종료</button>
+            </form>
+
+            <button th:if="${study.published && study.closed}" class="btn btn-outline-danger" disabled>스터디 종료됨</button>
+
+            <th:block th:if="${study.published && !study.closed}">
+              <hr class="my-3"/>
+              <div class="alert alert-info" role="alert">
+                팀원을 모집합니다.<br/>
+                충분한 스터디 팀원을 모집했다면 모집을 멈출 수 있습니다.<br/>
+                팀원 모집 정보는 3시간에 한번만 바꿀 수 있습니다.
+              </div>
+
+              <form th:if="${!study.recruiting}"
+                    th:action="@{|/study/${path}/settings/study/recruiting|}" th:method="post">
+                <button class="btn btn-outline-primary" type="submit">팀원 모집 시작</button>
+              </form>
+
+              <form th:if="${study.recruiting}"
+                    th:action="@{|/study/${path}/settings/study/recruiting|}" th:method="post">
+                <button class="btn btn-outline-danger" type="submit">팀원 모집 종료</button>
+              </form>
+            </th:block>
+
+            <hr class="my-3"/>
+            <div class="alert alert-warning" role="alert">
+              스터디 경로를 수정하면 이전에 사용하던 경로로 스터디에 접근할 수 없으니 주의하세요.
+            </div>
+            <form th:action="@{|/study/${path}/settings/study/path|}" method="post">
+              <div class="form-group">
+                <input id="path" type="text" th:value="${study.path}" name="newPath" class="form-control"
+                       placeholder="예) study-path" aria-describedby="pathHelp" required min="2" max="20">
+                <small id="pathHelp" class="form-text text-muted">
+                  공백없이 문자, 숫자, 대시(-)와 언더바(_)만 2자 이상 20자 이내로 입력하세요. 스터디 홈 주소에 사용합니다. 예) /study/<b>study-path</b>
+                </small>
+                <small class="invalid-feedback">스터디 경로를 입력하세요.</small>
+                <small class="form-text text-danger" th:if="${pathError}" th:text="${pathError}">Path
+                  Error</small>
+              </div>
+            </form>
+
+            <hr class="my-3"/>
+            <div class="alert alert-warning" role="alert">
+              스터디 이름을 수정합니다.
+            </div>
+
+            <form th:action="@{|/study/${path}/settings/study/title|}" method="post">
+              <div class="form-group">
+                <input id="title" type="text" th:field="${study.title}" class="form-control"
+                       placeholder="스터디 이름" aria-describedby="titleHelp" required max="50">
+                <small id="titleHelp" class="form-text text-muted">
+                  스터디 이름을 50자 이내로 입력하세요.
+                </small>
+                <small class="invalid-feedback">스터디 이름을 입력하세요.</small>
+                <small class="form-text text-danger" th:if="${titleError}" th:errors="${titleError}">Title
+                  Error</small>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<th:block layout:fragment="customScript">
+  <script th:replace="fragment/form-validate-script :: form-validate-script"></script>
+</th:block>
+</body>
+</html>

@@ -116,4 +116,41 @@ public class StudyService {
         Zone zone = zoneRepository.findByCity(city).orElseThrow(IllegalArgumentException::new);
         study.getZones().remove(zone);
     }
+
+    @Transactional
+    public void updatePublished(Account account, String path) {
+        Study study = getStudyWithManager(account, path);
+        checkIfManager(account, study);
+        study.setPublished(true);
+    }
+
+    @Transactional
+    public void updatePublishClosed(Account account, String path) {
+        Study study = getStudyWithManager(account, path);
+        checkIfManager(account, study);
+        study.setRecruiting(false);
+        study.setPublished(false);
+        study.setClosed(true);
+    }
+
+    @Transactional
+    public void updateRecruiting(Account account, String path) {
+        Study study = getStudyWithManager(account, path);
+        checkIfManager(account, study);
+        study.setRecruiting(!study.isRecruiting());
+    }
+
+    @Transactional
+    public void updatePath(Account account, String path, String newPath) {
+        Study study = getStudyWithManager(account, path);
+        checkIfManager(account, study);
+        study.setPath(newPath);
+    }
+
+    @Transactional
+    public void updateTitle(Account account, String path, String title) {
+        Study study = getStudyWithManager(account, path);
+        checkIfManager(account, study);
+        study.setTitle(title);
+    }
 }

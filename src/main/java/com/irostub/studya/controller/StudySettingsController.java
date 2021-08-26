@@ -22,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.constraints.Pattern;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -148,6 +149,55 @@ public class StudySettingsController {
         Study study = studyService.getStudyToUpdateZone(account, path);
         studyService.removeZone(study, city);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/study")
+    public String studySettingView(@CurrentAccount Account account, @PathVariable String path, Model model) {
+        Study study = studyService.getStudyWithManager(account, path);
+        model.addAttribute(study);
+        model.addAttribute(account);
+        return "content/study/settings/study";
+    }
+
+    @PostMapping("/study/publish")
+    public String publishStudy(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes, Model model) {
+        studyService.updatePublished(account ,path);
+        model.addAttribute(account);
+        redirectAttributes.addAttribute("path", path);
+        return "redirect:/study/{path}/settings/study";
+    }
+
+    @PostMapping("/study/close")
+    public String closeStudy(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes, Model model) {
+        studyService.updatePublishClosed(account ,path);
+        model.addAttribute(account);
+        redirectAttributes.addAttribute("path", path);
+        return "redirect:/study/{path}/settings/study";
+    }
+
+    @PostMapping("/study/recruiting")
+    public String recruitingStudy(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes, Model model) {
+        studyService.updateRecruiting(account ,path);
+        model.addAttribute(account);
+        redirectAttributes.addAttribute("path", path);
+        return "redirect:/study/{path}/settings/study";
+    }
+
+    @PostMapping("/study/path")
+    public String updatePath(@CurrentAccount Account account, @PathVariable String path, @RequestParam String newPath ,RedirectAttributes redirectAttributes) {
+        studyService.updatePath(account,path, newPath);
+        redirectAttributes.addAttribute("path", path);
+        return "redirect:/study/{path}/settings/study";
+    }
+
+    @PostMapping("/study/title")
+    public String updateTitle(@CurrentAccount Account account, @PathVariable String path, @RequestParam String title, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if(!title.matches("^[ㄱ-ㅎ가-힣a-z0-9_-]{2,20}$")){
+            log.error("bindingResult={}",bindingResult);
+        }
+        studyService.updateTitle(account, path, title);
+        redirectAttributes.addAttribute("path", path);
+        return "redirect:/study/{path}/settings/study";
     }
 
     private Collection<String> zoneFormatting(Collection<Zone> collection) {
