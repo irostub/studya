@@ -101,6 +101,10 @@ public class Study {
         return this.managers.contains(userAccount.getAccount());
     }
 
+    public boolean isRemovable(){
+        return !published;
+    }
+
     public String getEncodedPath() {
         return URLEncoder.encode(path, StandardCharsets.UTF_8);
     }

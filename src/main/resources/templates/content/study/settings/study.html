@@ -35,27 +35,38 @@
             </form>
 
             <button th:if="${study.published && study.closed}" class="btn btn-outline-danger" disabled>스터디 종료됨</button>
+          </div>
+        </div>
+        <div th:if="${study.published && !study.closed}" class="row my-3">
+          <hr>
+          <h2 class="col-sm-12">팀원 모집</h2>
+        </div>
+        <div th:if="${study.published && !study.closed}" class="row">
+          <div class="col-sm-12">
+            <div class="alert alert-info" role="alert">
+              팀원을 모집합니다.<br/>
+              충분한 스터디 팀원을 모집했다면 모집을 멈출 수 있습니다.<br/>
+              팀원 모집 정보는 3시간에 한번만 바꿀 수 있습니다.
+            </div>
 
-            <th:block th:if="${study.published && !study.closed}">
-              <hr class="my-3"/>
-              <div class="alert alert-info" role="alert">
-                팀원을 모집합니다.<br/>
-                충분한 스터디 팀원을 모집했다면 모집을 멈출 수 있습니다.<br/>
-                팀원 모집 정보는 3시간에 한번만 바꿀 수 있습니다.
-              </div>
+            <form th:if="${!study.recruiting}"
+                  th:action="@{|/study/${path}/settings/study/recruiting|}" th:method="post">
+              <button class="btn btn-outline-primary" type="submit">팀원 모집 시작</button>
+            </form>
 
-              <form th:if="${!study.recruiting}"
-                    th:action="@{|/study/${path}/settings/study/recruiting|}" th:method="post">
-                <button class="btn btn-outline-primary" type="submit">팀원 모집 시작</button>
-              </form>
+            <form th:if="${study.recruiting}"
+                  th:action="@{|/study/${path}/settings/study/recruiting|}" th:method="post">
+              <button class="btn btn-outline-danger" type="submit">팀원 모집 종료</button>
+            </form>
+          </div>
+        </div>
 
-              <form th:if="${study.recruiting}"
-                    th:action="@{|/study/${path}/settings/study/recruiting|}" th:method="post">
-                <button class="btn btn-outline-danger" type="submit">팀원 모집 종료</button>
-              </form>
-            </th:block>
-
-            <hr class="my-3"/>
+        <div class="row my-3">
+          <hr>
+          <h2 class="col-sm-12">스터디 경로</h2>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
             <div class="alert alert-warning" role="alert">
               스터디 경로를 수정하면 이전에 사용하던 경로로 스터디에 접근할 수 없으니 주의하세요.
             </div>
@@ -71,8 +82,14 @@
                   Error</small>
               </div>
             </form>
-
-            <hr class="my-3"/>
+          </div>
+        </div>
+        <div class="row my-3">
+          <hr>
+          <h2 class="col-sm-12">스터디 이름</h2>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
             <div class="alert alert-warning" role="alert">
               스터디 이름을 수정합니다.
             </div>
@@ -90,6 +107,37 @@
               </div>
             </form>
           </div>
+        </div>
+
+        <div class="row my-3">
+          <hr>
+          <h2 class="col-sm-12 text-danger">스터디 삭제</h2>
+        </div>
+        <div class="row" th:if="${study.isRemovable()}">
+          <div class="col-sm-12">
+            <div class="alert alert-danger" role="alert">
+              스터디를 삭제하면 스터디 관련 모든 기록을 삭제하며 복구할 수 없습니다. <br/>
+              <b>다음에 해당하는 스터디는 자동으로 삭제 됩니다.</b>
+              <ul>
+                <li>만든지 1주일이 지난 비공개 스터디</li>
+                <li>스터디 공개 이후, 한달 동안 모임을 만들지 않은 스터디</li>
+                <li>스터디 공개 이후, 모임을 만들지 않고 종료한 스터디</li>
+              </ul>
+            </div>
+
+            <form action="#" th:action="@{'/study/' + ${study.getPath()} + '/settings/study/remove'}" method="post" novalidate>
+                <button class="btn btn-outline-danger" type="submit" aria-describedby="submitHelp">스터디 삭제</button>
+            </form>
+          </div>
+        </div>
+        <div class="row" th:if="${!study.isRemovable()}">
+          <h5 class="col-sm-12 text-danger">스터디 삭제</h5>
+          <form action="#" method="post" novalidate>
+            <div class="alert alert-danger" role="alert">
+              공개 중이고 모임을 했던 스터디는 삭제할 수 없습니다.
+            </div>
+              <button class="btn btn-outline-danger" type="submit" aria-describedby="submitHelp" disabled>스터디 삭제</button>
+          </form>
         </div>
       </div>
     </div>
