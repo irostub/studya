@@ -45,7 +45,7 @@ public class StudyService {
     }
 
     public Study getStudyWithManager(Account account, String path) {
-        Study study = studyRepository.findStudyWithAccountByPath(path).orElseThrow(IllegalArgumentException::new);
+        Study study = studyRepository.findStudyWithManagersByPath(path).orElseThrow(IllegalArgumentException::new);
         checkIfManager(account, study);
         return study;
     }
@@ -160,5 +160,11 @@ public class StudyService {
         } else {
             throw new IllegalArgumentException("스터디를 삭제할 수 없습니다.");
         }
+    }
+
+    @Transactional
+    public void joinMember(Account account, String path) {
+        Study study = studyRepository.findStudyWithMembersByPath(path).orElseThrow(IllegalArgumentException::new);
+        study.getMembers().add(account);
     }
 }

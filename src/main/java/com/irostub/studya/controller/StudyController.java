@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -67,5 +68,12 @@ public class StudyController {
         Study study = studyRepository.findByPath(path).orElseThrow(IllegalArgumentException::new);
         model.addAttribute(study);
         return "content/study/member";
+    }
+
+    @GetMapping("/study/{path}/join")
+    public String joinMember(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes) {
+        studyService.joinMember(account, path);
+        redirectAttributes.addFlashAttribute("message", "스터디에 참여하였습니다.");
+        return "redirect:/study/{path}";
     }
 }

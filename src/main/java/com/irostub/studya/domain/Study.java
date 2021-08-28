@@ -21,6 +21,12 @@ import java.util.Set;
         }
 )
 @NamedEntityGraph(
+        name="Study.withMembers",
+        attributeNodes = {
+                @NamedAttributeNode("members"),
+        }
+)
+@NamedEntityGraph(
         name="Study.withManagers",
         attributeNodes = {
                 @NamedAttributeNode("managers")
