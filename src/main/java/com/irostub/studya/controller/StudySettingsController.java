@@ -200,6 +200,13 @@ public class StudySettingsController {
         return "redirect:/study/{path}/settings/study";
     }
 
+    @PostMapping("/study/remove")
+    public String removeStudy(@CurrentAccount Account account, @PathVariable String path) {
+        Study study = studyService.getStudyWithManager(account, path);
+        studyService.remove(study);
+        return "redirect:/";
+    }
+
     private Collection<String> zoneFormatting(Collection<Zone> collection) {
         return collection.stream().map(zone -> zone.getCity() + "(" + zone.getLocalNameOfCity() + ")/" + zone.getProvince()).collect(Collectors.toList());
     }
