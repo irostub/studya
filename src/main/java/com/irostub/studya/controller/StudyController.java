@@ -71,8 +71,9 @@ public class StudyController {
     }
 
     @GetMapping("/study/{path}/join")
-    public String joinMember(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes) {
+    public String joinMember(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes, Model model) {
         studyService.joinMember(account, path);
+        model.addAttribute(account);
         redirectAttributes.addFlashAttribute("message", "스터디에 참여하였습니다.");
         return "redirect:/study/{path}";
     }
