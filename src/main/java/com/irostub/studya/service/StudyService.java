@@ -167,4 +167,10 @@ public class StudyService {
         Study study = studyRepository.findStudyWithMembersByPath(path).orElseThrow(IllegalArgumentException::new);
         study.getMembers().add(account);
     }
+
+    @Transactional
+    public void leaveMember(Account account, String path) {
+        Study study = studyRepository.findStudyWithMembersByPath(path).orElseThrow(IllegalArgumentException::new);
+        study.getMembers().remove(account);
+    }
 }

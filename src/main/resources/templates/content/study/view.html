@@ -5,6 +5,7 @@
       layout:decorate="~{layout/default-layout}">
 <body class="bg-light">
 <th:block layout:fragment="content">
+  <div th:replace="fragment/common :: alert-message"></div>
   <div th:replace="fragment/study :: study-banner"></div>
   <div class="container">
     <div th:replace="fragment/study :: study-info"></div>

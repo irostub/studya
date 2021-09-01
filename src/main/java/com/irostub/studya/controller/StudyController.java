@@ -77,4 +77,12 @@ public class StudyController {
         redirectAttributes.addFlashAttribute("message", "스터디에 참여하였습니다.");
         return "redirect:/study/{path}";
     }
+
+    @GetMapping("/study/{path}/leave")
+    public String leaveMember(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes, Model model) {
+        studyService.leaveMember(account, path);
+        model.addAttribute(account);
+        redirectAttributes.addFlashAttribute("message", "스터디를 탈퇴하였습니다.");
+        return "redirect:/study/{path}";
+    }
 }
