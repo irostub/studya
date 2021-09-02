@@ -1,5 +1,6 @@
 package com.irostub.studya.domain;
 
+import com.irostub.studya.controller.adapter.UserAccount;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,6 +46,31 @@ public class Event {
     @ManyToOne
     private Account createdBy;
 
+    @OrderBy("enrolledAt")
     @OneToMany(mappedBy = "event")
     List<Enrollment> enrollments = new ArrayList<>();
+
+    public boolean isEnrollableFor(UserAccount userAccount) {
+        Account account = userAccount.getAccount();
+        for (Enrollment enrollment : enrollments) {
+            if(isNotClosed() && !isAttended(account, enrollment) && !isAlreadyEnrolled(account, enrollment)){
+                return true;
+            }
+        }
+
+        //TODO: 여기부터 시작
+        return false;
+    }
+
+    private boolean isAlreadyEnrolled(Account account, Enrollment enrollment) {
+        return enrollment.getAccount().equals(account);
+    }
+
+    private boolean isAttended(Account account, Enrollment enrollment) {
+        return enrollment.getAccount().equals(account) && enrollment.isAttended();
+    }
+
+    private boolean isNotClosed() {
+        return endEnrollmentDateTime.isAfter(LocalDateTime.now());
+    }
 }
