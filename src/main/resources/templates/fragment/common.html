@@ -6,8 +6,16 @@
   <title>Title</title>
 </head>
 <body>
-<script type="application/javascript" th:inline="javascript" th:fragment="ajax-csrf-header">
-    $(function() {
+<div th:fragment="alert-message" th:if="${message}" class="alert alert-success alert-dismissible fade show"
+     role="alert">
+  <div th:text="${message}"></div>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<script th:fragment="ajax-csrf-header" type="application/javascript" th:inline="javascript">
+    $(function () {
         var csrfToken = /*[[${_csrf.token}]]*/ null;
         var csrfHeader = /*[[${_csrf.headerName}]]*/ null;
         $(document).ajaxSend(function (e, xhr, options) {

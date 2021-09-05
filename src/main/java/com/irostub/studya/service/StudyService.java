@@ -45,7 +45,7 @@ public class StudyService {
     }
 
     public Study getStudyWithManager(Account account, String path) {
-        Study study = studyRepository.findStudyWithAccountByPath(path).orElseThrow(IllegalArgumentException::new);
+        Study study = studyRepository.findStudyWithManagersByPath(path).orElseThrow(IllegalArgumentException::new);
         checkIfManager(account, study);
         return study;
     }
@@ -115,5 +115,62 @@ public class StudyService {
     public void removeZone(Study study, String city) {
         Zone zone = zoneRepository.findByCity(city).orElseThrow(IllegalArgumentException::new);
         study.getZones().remove(zone);
+    }
+
+    @Transactional
+    public void updatePublished(Account account, String path) {
+        Study study = getStudyWithManager(account, path);
+        checkIfManager(account, study);
+        study.setPublished(true);
+    }
+
+    @Transactional
+    public void updatePublishClosed(Account account, String path) {
+        Study study = getStudyWithManager(account, path);
+        checkIfManager(account, study);
+        study.setRecruiting(false);
+        study.setPublished(false);
+        study.setClosed(true);
+    }
+
+    @Transactional
+    public void updateRecruiting(Account account, String path) {
+        Study study = getStudyWithManager(account, path);
+        checkIfManager(account, study);
+        study.setRecruiting(!study.isRecruiting());
+    }
+
+    @Transactional
+    public void updatePath(Account account, String path, String newPath) {
+        Study study = getStudyWithManager(account, path);
+        checkIfManager(account, study);
+        study.setPath(newPath);
+    }
+
+    @Transactional
+    public void updateTitle(Account account, String path, String title) {
+        Study study = getStudyWithManager(account, path);
+        checkIfManager(account, study);
+        study.setTitle(title);
+    }
+
+    public void remove(Study study) {
+        if (study.isRemovable()) {
+            studyRepository.delete(study);
+        } else {
+            throw new IllegalArgumentException("스터디를 삭제할 수 없습니다.");
+        }
+    }
+
+    @Transactional
+    public void joinMember(Account account, String path) {
+        Study study = studyRepository.findStudyWithMembersByPath(path).orElseThrow(IllegalArgumentException::new);
+        study.getMembers().add(account);
+    }
+
+    @Transactional
+    public void leaveMember(Account account, String path) {
+        Study study = studyRepository.findStudyWithMembersByPath(path).orElseThrow(IllegalArgumentException::new);
+        study.getMembers().remove(account);
     }
 }

@@ -21,6 +21,12 @@ import java.util.Set;
         }
 )
 @NamedEntityGraph(
+        name="Study.withMembers",
+        attributeNodes = {
+                @NamedAttributeNode("members"),
+        }
+)
+@NamedEntityGraph(
         name="Study.withManagers",
         attributeNodes = {
                 @NamedAttributeNode("managers")
@@ -99,6 +105,10 @@ public class Study {
 
     public boolean isManager(UserAccount userAccount) {
         return this.managers.contains(userAccount.getAccount());
+    }
+
+    public boolean isRemovable(){
+        return !published;
     }
 
     public String getEncodedPath() {
