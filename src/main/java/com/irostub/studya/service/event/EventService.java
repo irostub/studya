@@ -31,4 +31,8 @@ public class EventService {
         eventMapper.updateFormToEntity(eventForm, event);
         //TODO : 모집 인원을 늘렸을 때, 선착순 모임인 경우. 자동으로 대기중인 인원을 확정상태로 변경해야함.
     }
+
+    public void deleteEvent(Event event) {
+        eventRepository.delete(event);
+    }
 }

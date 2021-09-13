@@ -124,7 +124,14 @@ public class EventController {
         }
 
         eventService.updateEvent(event, eventForm);
-        
+
         return "redirect:";
+    }
+
+    @PostMapping("/events/{id}/delete")
+    public String cancelEvent(@CurrentAccount Account account, @PathVariable String path, @PathVariable Long id) {
+        Study study = studyService.getStudyWithManager(account, path);
+        eventService.deleteEvent(eventRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return "redirect:/study/" + study.getEncodedPath() + "/events";
     }
 }
