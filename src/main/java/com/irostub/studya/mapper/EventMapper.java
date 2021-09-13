@@ -9,6 +9,11 @@ import org.mapstruct.*;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface EventMapper {
 
+    void updateFormToEntity(EventForm eventForm, @MappingTarget Event event);
+
     @BeanMapping(builder = @Builder(disableBuilder = true))
     Event eventFormToEventEntity(EventForm eventForm);
+
+    @BeanMapping(builder = @Builder(disableBuilder = true))
+    EventForm eventEntityToeventForm(Event event);
 }

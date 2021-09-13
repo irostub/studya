@@ -6,7 +6,6 @@
       layout:decorate="~{layout/default-layout}">
 <body>
 <th:block layout:fragment="content">
-  <nav th:replace="fragment/navbar :: default-navbar"></nav>
   <div th:replace="fragment/study :: study-banner"></div>
   <div class="container">
     <div class="row py-4 text-left justify-content-center bg-light">
@@ -146,8 +145,8 @@
       <dl class="col-3 pt-3 text-right">
         <dt class="font-weight-light">모집 방법</dt>
         <dd>
-          <span th:if="${event.eventType == T(com.studyolle.modules.event.EventType).FCFS}">선착순</span>
-          <span th:if="${event.eventType == T(com.studyolle.modules.event.EventType).CONFIRMATIVE}">관리자 확인</span>
+          <span th:if="${event.eventType == T(com.irostub.studya.domain.EventType).FCFS}">선착순</span>
+          <span th:if="${event.eventType == T(com.irostub.studya.domain.EventType).CONFIRMATIVE}">관리자 확인</span>
         </dd>
 
         <dt class="font-weight-light">모집 인원</dt>
@@ -217,9 +216,10 @@
         </div>
       </div>
     </div>
-    <div th:replace="fragment/footer :: default-footer"></div>
   </div>
 </th:block>
-<!--  <script th:replace="fragments.html :: date-time"></script>-->
+<th:block layout:fragment="customScript">
+  <script th:replace="fragment/event :: date-time"></script>
+</th:block>
 </body>
 </html>
