@@ -113,7 +113,7 @@ public class EventController {
         eventForm.setEventType(event.getEventType());
 
         if (eventForm.getLimitOfEnrollments() < event.getNumberOfAcceptedEnrollments()) {
-            bindingResult.rejectValue("limitOfEnrollments", "invalid",new Object[]{eventForm.getLimitOfEnrollments()},null);
+            bindingResult.rejectValue("limitOfEnrollments", "invalid", new Object[]{eventForm.getLimitOfEnrollments()}, null);
         }
 
         if (bindingResult.hasErrors()) {
@@ -133,5 +133,33 @@ public class EventController {
         Study study = studyService.getStudyWithManager(account, path);
         eventService.deleteEvent(eventRepository.findById(id).orElseThrow(IllegalArgumentException::new));
         return "redirect:/study/" + study.getEncodedPath() + "/events";
+    }
+
+    @PostMapping("/events/{id}/enroll")
+    public String newEnrollment(@CurrentAccount Account account, @PathVariable String path, @PathVariable Long id) {
+        Study study = studyService.getStudyToEnroll(path);
+        eventService.newEnrollment(eventRepository.findById(id).orElseThrow(), account);
+        return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
+    }
+
+    @PostMapping("/events/{id}/disenroll")
+    public String cancelEnrollment(@CurrentAccount Account account, @PathVariable String path, @PathVariable Long id) {
+        Study study = studyService.getStudyToEnroll(path);
+        eventService.cancelEnrollment(eventRepository.findById(id).orElseThrow(), account);
+        return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
+    }
+
+    @PostMapping("/events/{id}/enrollments/{id}/accept")
+    public String acceptEnrollment(@CurrentAccount Account account, @PathVariable String path, @PathVariable Long id) {
+        Study study = studyService.getStudyWithManager(account, path);
+        eventService.acceptEnrollment(eventRepository.findById(id).orElseThrow(), account);
+        return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
+    }
+
+    @PostMapping("/events/{id}/enrollments/{id}/reject")
+    public String rejectEnrollment(@CurrentAccount Account account, @PathVariable String path, @PathVariable Long id) {
+        Study study = studyService.getStudyWithManager(account, path);
+        eventService.rejectEnrollment(eventRepository.findById(id).orElseThrow(), account);
+        return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
     }
 }

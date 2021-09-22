@@ -76,7 +76,6 @@ public class Event {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -148,7 +147,7 @@ public class Event {
         }
     }
 
-    private Enrollment getTheFirstWaitingEnrollment() {
+    private  Enrollment getTheFirstWaitingEnrollment() {
         for (Enrollment e : this.enrollments) {
             if (!e.isAccepted()) {
                 return e;
