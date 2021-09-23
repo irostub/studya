@@ -2,9 +2,11 @@ package com.irostub.studya.service.event;
 
 import com.irostub.studya.controller.form.EventForm;
 import com.irostub.studya.domain.Account;
+import com.irostub.studya.domain.Enrollment;
 import com.irostub.studya.domain.Event;
 import com.irostub.studya.domain.Study;
 import com.irostub.studya.mapper.EventMapper;
+import com.irostub.studya.repository.EnrollmentRepository;
 import com.irostub.studya.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final EventMapper eventMapper;
 
     @Transactional
@@ -29,10 +32,43 @@ public class EventService {
     @Transactional
     public void updateEvent(Event event, EventForm eventForm) {
         eventMapper.updateFormToEntity(eventForm, event);
-        //TODO : 모집 인원을 늘렸을 때, 선착순 모임인 경우. 자동으로 대기중인 인원을 확정상태로 변경해야함.
+        //이벤트 수정 시 늘어난 인원 만큼 선착순 인원을 확정상태로 변경
+        event.acceptWaitingList();
     }
 
     public void deleteEvent(Event event) {
         eventRepository.delete(event);
+    }
+
+    @Transactional
+    public void newEnrollment(Event event, Account account) {
+        if(!enrollmentRepository.existsByEventAndAccount(event, account)){
+            Enrollment enrollment = new Enrollment();
+            enrollment.setEnrolledAt(LocalDateTime.now());
+            enrollment.setAccepted(event.isAbleToAcceptWaitingEnrollment());
+            enrollment.setAccount(account);
+            event.addEnrollment(enrollment);
+            enrollmentRepository.save(enrollment);
+        }
+    }
+
+    @Transactional
+    public void cancelEnrollment(Event event, Account account) {
+        Enrollment enrollment = enrollmentRepository.findByEventAndAccount(event, account);
+        event.removeEnrollment(enrollment);
+        enrollmentRepository.delete(enrollment);
+        event.acceptNextWaitingEnrollment();
+    }
+
+    @Transactional
+    public void acceptEnrollment(Event event, Account account) {
+        Enrollment enrollment = enrollmentRepository.findByEventAndAccount(event, account);
+        event.accept(enrollment);
+    }
+
+    @Transactional
+    public void rejectEnrollment(Event event, Account account) {
+        Enrollment enrollment = enrollmentRepository.findByEventAndAccount(event, account);
+        event.reject(enrollment);
     }
 }
