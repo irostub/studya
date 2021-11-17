@@ -2,7 +2,10 @@ plugins {
 	id 'org.springframework.boot' version '2.5.3'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	//node plugin 추가
 	id "com.github.node-gradle.node" version "3.1.0"
+	//querydsl gradle plugin 추가
+	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
 group = 'com.irostub'
@@ -41,6 +44,9 @@ dependencies {
 	//아키텍쳐- 의존성 구조 테스트
 	testImplementation 'com.tngtech.archunit:archunit:0.22.0'
 
+	//querydsl library 추가
+	implementation 'com.querydsl:querydsl-jpa'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
@@ -57,6 +63,7 @@ test {
 	useJUnitPlatform()
 }
 
+//node build 추가 시작
 node {
 	version = '16.3.0'
 	download = true
@@ -69,3 +76,21 @@ task copyFrontLib(type: Copy) {
 }
 copyFrontLib.dependsOn npmInstall
 compileJava.dependsOn copyFrontLib
+//node build 추가 끝
+
+//querydsl 추가 시작
+def querydslDir = "$buildDir/generated/querydsl"
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+sourceSets {
+	main.java.srcDir querydslDir
+}
+configurations {
+	querydsl.extendsFrom compileClasspath
+}
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
+}
+//querydsl 추가 끝

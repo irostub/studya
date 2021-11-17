@@ -30,7 +30,6 @@ public class StudyService {
     public Study addStudy(Account account, StudyForm studyForm) {
         Study study = studyMapper.studyFormToStudyEntity(studyForm);
         study.getManagers().add(account);
-        eventPublisher.publishEvent(new StudyCreatedEvent(study));
         return studyRepository.save(study);
     }
 
@@ -123,6 +122,9 @@ public class StudyService {
         Study study = getStudyWithManager(account, path);
         checkIfManager(account, study);
         study.setPublished(true);
+
+        //스터디 공개 시 이벤트 발생
+        eventPublisher.publishEvent(new StudyCreatedEvent(study));
     }
 
     @Transactional

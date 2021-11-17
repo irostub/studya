@@ -18,10 +18,13 @@ public class AsyncConfig implements AsyncConfigurer {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         int processor = Runtime.getRuntime().availableProcessors();
         log.info("Available processors: {}", processor);
-
+        //기본 풀 개수
         executor.setCorePoolSize(processor);
+        //최대 풀 개수
         executor.setMaxPoolSize(processor * 2);
+        //기본 풀 개수 초과 시 대기열 큐
         executor.setQueueCapacity(50);
+        //스레드 이름 prefix
         executor.setThreadNamePrefix("AsyncExecutor-");
         executor.initialize();
         return executor;
