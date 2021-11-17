@@ -1,5 +1,6 @@
 package com.irostub.studya.modules.study;
 
+import com.irostub.studya.modules.study.event.StudyCreatedEvent;
 import com.irostub.studya.modules.study.form.StudyDescriptionForm;
 import com.irostub.studya.modules.study.form.StudyForm;
 import com.irostub.studya.modules.account.Account;
@@ -8,6 +9,7 @@ import com.irostub.studya.modules.zone.Zone;
 import com.irostub.studya.modules.tag.TagRepository;
 import com.irostub.studya.modules.zone.ZoneRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +24,13 @@ public class StudyService {
     private final StudyMapper studyMapper;
     private final TagRepository tagRepository;
     private final ZoneRepository zoneRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Study addStudy(Account account, StudyForm studyForm) {
         Study study = studyMapper.studyFormToStudyEntity(studyForm);
         study.getManagers().add(account);
+        eventPublisher.publishEvent(new StudyCreatedEvent(study));
         return studyRepository.save(study);
     }
 
