@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.irostub.studya.modules.account.QAccount.account;
-import static com.irostub.studya.modules.tag.QTag.tag;
-import static com.irostub.studya.modules.zone.QZone.zone;
 
 @RequiredArgsConstructor
 public class AccountRepositorySupportImpl implements AccountRepositorySupport {
@@ -19,10 +17,7 @@ public class AccountRepositorySupportImpl implements AccountRepositorySupport {
     public List<Account> findByTagsAndZones(Set<Tag> tags, Set<Zone> zones) {
         return jpaQueryFactory.
                 selectFrom(account)
-                .join(account.tags, tag)
-                .fetchJoin()
-                .join(account.zones, zone)
-                .fetchJoin()
+                .where(account.tags.any().in(tags), account.zones.any().in(zones))
                 .fetch();
     }
 }
