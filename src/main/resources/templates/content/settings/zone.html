@@ -27,7 +27,8 @@
   </div>
 </div>
 <th:block layout:fragment="customScript">
-  <script th:fragment="update-zones (baseUrl='/settings/zone')"></script>
+  <script th:replace="fragment/common :: ajax-csrf-header"></script>
+  <script th:replace="fragment/tagify :: update-zones (baseUrl='/settings/zone')"></script>
 </th:block>
 </body>
 </html>
