@@ -38,7 +38,8 @@
     <ul class="navbar-nav justify-content-end" sec:authorize="isAuthenticated()">
       <li class="nav-item">
         <a class="nav-link" href="#" th:href="@{/notifications}">
-          <i class="fa fa-bell-o"></i>
+          <span class="text-info" th:if="${hasNotification}"><i class="fa fa-bell"></i></span>
+          <i th:unless="${hasNotification}" class="fa fa-bell-o"></i>
         </a>
       </li>
       <li class="nav-item">
