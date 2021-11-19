@@ -52,4 +52,8 @@ public class Notification {
         this.createdAt = createdAt;
         this.type = type;
     }
+
+    public void changeCheckedFlag(boolean checked) {
+        this.checked = checked;
+    }
 }
