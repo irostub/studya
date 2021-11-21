@@ -38,7 +38,7 @@
       </ul>
 
       <ul class="list-group mt-4" th:if="${numberOfChecked > 0}">
-        <form th:action="@{/notifications}" th:method="delete">
+        <form th:action="@{/notifications}" th:method="post">
           <button type="submit" class="btn btn-block btn-outline-warning" aria-describedby="deleteHelp">
             읽은 알림 삭제
           </button>

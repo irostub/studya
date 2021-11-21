@@ -1,6 +1,7 @@
 package com.irostub.studya.modules.study;
 
 import com.irostub.studya.modules.study.event.StudyCreatedEvent;
+import com.irostub.studya.modules.study.event.StudyUpdateEvent;
 import com.irostub.studya.modules.study.form.StudyDescriptionForm;
 import com.irostub.studya.modules.study.form.StudyForm;
 import com.irostub.studya.modules.account.Account;
@@ -36,6 +37,7 @@ public class StudyService {
     @Transactional
     public void updateStudy(Study study, StudyDescriptionForm studyDescriptionForm) {
         studyMapper.updateStudyFromStudyDescriptionForm(studyDescriptionForm, study);
+        eventPublisher.publishEvent(new StudyUpdateEvent(study, "스터디 소개를 수정했습니다."));
     }
 
     public Study getStudyToUpdate(Account account, String path) {
@@ -123,17 +125,16 @@ public class StudyService {
         checkIfManager(account, study);
         study.setPublished(true);
 
-        //스터디 공개 시 이벤트 발생
-        eventPublisher.publishEvent(new StudyCreatedEvent(study));
+        eventPublisher.publishEvent(new StudyCreatedEvent(study, "스터디가 개설되었습니다."));
     }
 
     @Transactional
     public void updatePublishClosed(Account account, String path) {
         Study study = getStudyWithManager(account, path);
         checkIfManager(account, study);
-        study.setRecruiting(false);
-        study.setPublished(false);
-        study.setClosed(true);
+        study.close();
+
+        eventPublisher.publishEvent(new StudyUpdateEvent(study, "스터디가 종료되었습니다."));
     }
 
     @Transactional

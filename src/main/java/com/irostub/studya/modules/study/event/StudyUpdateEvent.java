@@ -1,12 +1,13 @@
 package com.irostub.studya.modules.study.event;
 
 import com.irostub.studya.modules.study.Study;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class StudyCreatedEvent {
+public class StudyUpdateEvent {
     private final Study study;
     private final String message;
 }

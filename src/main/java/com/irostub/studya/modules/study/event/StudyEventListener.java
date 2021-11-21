@@ -20,7 +20,9 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Async
 @RequiredArgsConstructor
@@ -39,45 +41,64 @@ public class StudyEventListener {
     @EventListener
     public void handleStudyCreatedEvent(StudyCreatedEvent studyCreatedEvent) {
         Study study = studyRepository.findStudyWithTagsAndZonesById(studyCreatedEvent.getStudy().getId());
-        log.info(study.getTitle());
         List<Account> accounts = accountRepository.findByTagsAndZones(study.getTags(), study.getZones());
 
         accounts.forEach(account -> {
-                    log.info("isCreatedEmail={}",account.isStudyCreatedByEmail());
-                    log.info("isCreatedWeb={}",account.isStudyCreatedByWeb());
-                    if (account.isStudyCreatedByEmail()) {
-                        sendStudyCreatedEmail(study, account);
-                    }
-                    if (account.isStudyCreatedByWeb()) {
-                        studyCreatedNotification(study, account);
-                    }
-                });
+            log.info("isCreatedEmail={}", account.isStudyCreatedByEmail());
+            log.info("isCreatedWeb={}", account.isStudyCreatedByWeb());
+            if (account.isStudyCreatedByEmail()) {
+                sendStudyEmail(study, account, studyCreatedEvent.getMessage()
+                ,"스터디야 - '" + study.getTitle() + "' 스터디가 생겼습니다.");
+            }
+            if (account.isStudyCreatedByWeb()) {
+                createNotification(study, account, studyCreatedEvent.getMessage(), NotificationType.STUDY_CREATED);
+            }
+        });
     }
 
-    private void studyCreatedNotification(Study study, Account account) {
+    @EventListener
+    public void handleStudyUpdatedEvent(StudyUpdateEvent studyUpdateEvent) {
+        Study study = studyRepository.findStudyWithManagersAndMembersById(studyUpdateEvent.getStudy().getId());
+        Set<Account> accounts = new HashSet<>();
+
+        accounts.addAll(study.getManagers());
+        accounts.addAll(study.getMembers());
+
+        accounts.forEach(account -> {
+            if (account.isStudyUpdatedByEmail()) {
+                sendStudyEmail(study, account, studyUpdateEvent.getMessage()
+                        ,"스터디야 - '" + study.getTitle() + "' 스터디가 갱신되었습니다.");
+            }
+            if (account.isStudyUpdatedByWeb()) {
+                createNotification(study, account, studyUpdateEvent.getMessage(), NotificationType.STUDY_UPDATED);
+            }
+        });
+    }
+
+    private void createNotification(Study study, Account account, String message, NotificationType type) {
         Notification notification = new Notification(
                 study.getTitle(),
-                "/study/"+ study.getEncodedPath(),
-                study.getShortDescription(),
+                "/study/" + study.getEncodedPath(),
+                message,
                 false,
                 account,
                 LocalDateTime.now(),
-                NotificationType.STUDY_CREATED
+                type
         );
         notificationRepository.save(notification);
     }
 
-    private void sendStudyCreatedEmail(Study study, Account account) {
+    private void sendStudyEmail(Study study, Account account, String message, String subject) {
         Context context = new Context();
         context.setVariable("nickname", account.getNickname());
         context.setVariable("link", "/study/" + study.getEncodedPath());
         context.setVariable("linkName", study.getTitle());
-        context.setVariable("message", "관심 등록해둔 스터디가 개설되었습니다.");
+        context.setVariable("message", message);
         context.setVariable("domain", appProperties.getHost());
         String process = templateEngine.process("mail/auth-mail", context);
 
         MailMessage mailMessage = MailMessage.builder()
-                .subject("스터디야 - '" + study.getTitle() + "' 스터디가 생겼습니다.")
+                .subject(subject)
                 .to(account.getEmail())
                 .text(process).build();
         mailService.send(mailMessage);

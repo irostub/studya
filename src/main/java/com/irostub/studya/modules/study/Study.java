@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @NamedEntityGraph(
-        name="Study.withAllRelations",
+        name = "Study.withAllRelations",
         attributeNodes = {
                 @NamedAttributeNode("managers"),
                 @NamedAttributeNode("members"),
@@ -24,35 +24,40 @@ import java.util.Set;
         }
 )
 @NamedEntityGraph(
-        name="Study.withMembers",
+        name = "Study.withMembers",
         attributeNodes = {
                 @NamedAttributeNode("members"),
         }
 )
 @NamedEntityGraph(
-        name="Study.withManagers",
+        name = "Study.withManagers",
         attributeNodes = {
                 @NamedAttributeNode("managers")
         }
 )
 @NamedEntityGraph(
-        name="Study.withTags",
+        name = "Study.withTags",
         attributeNodes = {
                 @NamedAttributeNode("tags")
         }
 )
 @NamedEntityGraph(
-        name="Study.withZones",
+        name = "Study.withZones",
         attributeNodes = {
                 @NamedAttributeNode("zones")
         }
 )
 @Entity
-@Getter @Setter @EqualsAndHashCode(of="id")
-@Builder @AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(of = "id")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Study {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToMany
@@ -66,7 +71,7 @@ public class Study {
 
     private String title;
 
-    @Length(min=2, max = 100)
+    @Length(min = 2, max = 100)
     private String shortDescription;
 
     @Lob
@@ -95,6 +100,16 @@ public class Study {
 
     private boolean useBanner;
 
+    public void close() {
+        if (published && !closed) {
+            this.closed = true;
+            this.closedDateTime = LocalDateTime.now();
+        } else {
+            throw new RuntimeException("스터디를 종료할 수 없습니다.");
+        }
+    }
+
+
     public boolean isJoinable(UserAccount userAccount) {
         Account account = userAccount.getAccount();
         return this.isPublished() && this.isRecruiting()
@@ -110,7 +125,7 @@ public class Study {
         return this.managers.contains(userAccount.getAccount());
     }
 
-    public boolean isRemovable(){
+    public boolean isRemovable() {
         return !published;
     }
 

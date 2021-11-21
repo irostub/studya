@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +42,10 @@ public class NotificationController {
         return "content/notification/list";
     }
 
-    @DeleteMapping("/notifications")
+    @PostMapping("/notifications")
     public String deleteNotifications(@CurrentAccount Account account) {
         notificationRepository.deleteByAccountAndChecked(account, true);
-        return "redirect:/ ";
+        return "redirect:/";
     }
 
     private void putNotificationData(Model model, List<Notification> notifications, long numOfChecked, long numOfNotChecked) {
