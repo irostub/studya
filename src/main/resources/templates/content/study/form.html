@@ -8,7 +8,7 @@
   <div class="py-5 text-center">
     <h2>스터디 개설</h2>
   </div>
-  <!--/*@thymesVar id="signupForm" type="com.irostub.studya.controller.form.SignupForm"*/-->
+  <!--/*@thymesVar id="signupForm" type="com.irostub.studya.modules.account.form.SignupForm"*/-->
   <div class="row justify-content-center">
     <form class="needs-validation col-sm-10" th:action="@{/new-study}" th:object="${studyForm}" method="post"
           novalidate>
