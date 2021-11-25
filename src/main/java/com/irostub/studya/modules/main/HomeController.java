@@ -27,4 +27,9 @@ public class HomeController {
         model.addAttribute("keyword", keyword);
         return "/content/search/search";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "content/account/login";
+    }
 }
