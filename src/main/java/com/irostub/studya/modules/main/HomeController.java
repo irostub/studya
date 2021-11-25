@@ -23,8 +23,8 @@ public class HomeController {
 
     @GetMapping("/search/study")
     public String searchStudy(String keyword, Model model) {
-        model.addAttribute(studyRepository.findByKeyword(keyword));
+        model.addAttribute("studyList", studyRepository.findByKeyword(keyword));
         model.addAttribute("keyword", keyword);
-        return "search";
+        return "/content/search/search";
     }
 }
