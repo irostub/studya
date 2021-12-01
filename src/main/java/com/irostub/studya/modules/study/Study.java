@@ -132,4 +132,8 @@ public class Study {
     public String getEncodedPath() {
         return URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
+
+    public String getImage() {
+        return image != null ? image : "/images/default_banner.png";
+    }
 }
