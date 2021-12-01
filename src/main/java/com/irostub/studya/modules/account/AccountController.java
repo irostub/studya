@@ -73,11 +73,6 @@ public class AccountController {
         return "redirect:/";
     }
 
-    @GetMapping("/login")
-    public String loginPage() {
-        return "content/account/login";
-    }
-
     @GetMapping("/profile/{nickname}")
     public String profilePage(@PathVariable String nickname, Model model, @CurrentAccount Account account){
         Account targetUser = accountRepository.findByNickname(nickname).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
