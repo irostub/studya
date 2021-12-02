@@ -77,7 +77,6 @@ public class StudySettingsController {
     @PostMapping("/banner/disable")
     public String disableBanner(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes) {
         studyService.disableBanner(account, path);
-        //TODO:스터디에 이미지 비어있을 시 기본 배너이미지를 사용하도록 수정
         redirectAttributes.addFlashAttribute("message", "배너 이미지를 사용하지 않도록 설정했습니다.");
         return "redirect:/study/" + encodePath(path) + "/settings/banner";
     }
