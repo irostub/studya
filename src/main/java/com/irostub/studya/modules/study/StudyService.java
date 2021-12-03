@@ -183,21 +183,4 @@ public class StudyService {
     public Study getStudyToEnroll(String path) {
         return  studyRepository.findStudyOnlyByPath(path).orElseThrow(IllegalArgumentException::new);
     }
-
-    public void generateTestData(Account account) {
-        for (int i = 0; i < 30; i++) {
-            String random = RandomString.make(5);
-            StudyForm study = new StudyForm();
-            study.setPath("test" + random);
-            study.setTitle("테스트 스터디 " + random);
-            study.setFullDescription("테스트 스터디입니다.");
-            study.setShortDescription("테스트 스터디입니다.");
-            Study newStudy = this.addStudy(account, study);
-            tagRepository.findByTitle("JPA").ifPresent(
-                    (tag)->{
-                        newStudy.getTags().add(tag);
-                    }
-            );
-        }
-    }
 }

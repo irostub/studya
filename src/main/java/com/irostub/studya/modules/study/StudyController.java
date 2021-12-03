@@ -82,10 +82,4 @@ public class StudyController {
         redirectAttributes.addFlashAttribute("message", "스터디를 탈퇴하였습니다.");
         return "redirect:/study/{path}";
     }
-
-    @GetMapping("/study/data")
-    public String genTestData(@CurrentAccount Account account, Model model) {
-        studyService.generateTestData(account);
-        return "redirect:/";
-    }
 }
