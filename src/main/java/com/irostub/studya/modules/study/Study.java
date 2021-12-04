@@ -5,6 +5,7 @@ import com.irostub.studya.modules.account.UserAccount;
 import com.irostub.studya.modules.tag.Tag;
 import com.irostub.studya.modules.zone.Zone;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -100,6 +101,9 @@ public class Study {
 
     private boolean useBanner;
 
+    @ColumnDefault("0")
+    private int memberCount;
+
     public void close() {
         if (published && !closed) {
             this.closed = true;
@@ -108,7 +112,6 @@ public class Study {
             throw new RuntimeException("스터디를 종료할 수 없습니다.");
         }
     }
-
 
     public boolean isJoinable(UserAccount userAccount) {
         Account account = userAccount.getAccount();
@@ -135,5 +138,15 @@ public class Study {
 
     public String getImage() {
         return image != null ? image : "/images/default_banner.png";
+    }
+
+    public void addMember(Account account) {
+        this.getMembers().add(account);
+        this.memberCount++;
+    }
+
+    public void removeMember(Account account) {
+        this.getMembers().remove(account);
+        this.memberCount--;
     }
 }

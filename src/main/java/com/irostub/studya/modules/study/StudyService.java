@@ -171,13 +171,13 @@ public class StudyService {
     @Transactional
     public void joinMember(Account account, String path) {
         Study study = studyRepository.findStudyWithMembersByPath(path).orElseThrow(IllegalArgumentException::new);
-        study.getMembers().add(account);
+        study.addMember(account);
     }
 
     @Transactional
     public void leaveMember(Account account, String path) {
         Study study = studyRepository.findStudyWithMembersByPath(path).orElseThrow(IllegalArgumentException::new);
-        study.getMembers().remove(account);
+        study.removeMember(account);
     }
 
     public Study getStudyToEnroll(String path) {

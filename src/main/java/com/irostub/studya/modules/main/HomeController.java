@@ -29,6 +29,8 @@ public class HomeController {
         Page<Study> studyPage = studyRepository.findByKeyword(keyword, pageable);
         model.addAttribute("keyword", keyword);
         model.addAttribute("studyPage",studyPage);
+        model.addAttribute("sortProperty",
+                pageable.getSort().toString().contains("publishedDateTime") ? "publishedDateTime" : "memberCount");
         return "content/search/search";
     }
 
