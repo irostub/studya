@@ -8,20 +8,21 @@
 <!--/*@thymesVar id="message" type="java.lang.String"*/-->
 <!--/*@thymesVar id="error" type="java.lang.String"*/-->
 <th:block layout:fragment="content">
-  <div class="alert alert-warning" role="alert"
-       th:if="${account != null && !account.isEmailVerified()}">
-    스터디야 가입을 완료하려면 <a th:href="@{/check-email}">계정 인증 이메일을 확인</a>하세요.
-  </div>
+  <section class="jumbotron text-center">
+    <div class="container">
+      <h1>스터디올래</h1>
+      <p class="lead text-muted">
+        태그와 지역 기반으로 스터디를 찾고 참여하세요.<br/>
+        스터디 모임 관리 기능을 제공합니다.
+      </p>
+      <p>
+        <a th:href="@{/sign-up}" class="btn btn-primary my-2">회원 가입</a>
+      </p>
+    </div>
+  </section>
   <div class="container">
-    <div class="py-5 text-center">
-      <div th:if="${message}">
-        <p class="lead">스터디야 이메일 로그인</p>
-        <h2>이메일로 로그인 했습니다. <a th:href="@{/settings/password}">비밀번호를 변경</a>하세요.</h2>
-      </div>
-      <div th:if="${error}">
-        <p class="lead">스터디야 이메일 로그인</p>
-        <h2 class="alert alert-danger" th:text="${error}">이메일 로그인에 실패했습니다.</h2>
-      </div>
+    <div class="row justify-content-center pt-3">
+      <div th:replace="fragments.html :: study-list (studyList=${studyList})"></div>
     </div>
   </div>
 </th:block>
