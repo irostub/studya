@@ -12,7 +12,7 @@ import org.springframework.context.annotation.PropertySources;
 @Configuration
 @PropertySources({
         @PropertySource(value="file:c:/dev/studya/config.properties", ignoreResourceNotFound = true),
-        @PropertySource(value="file:${user.home}/Documents/dev/studya/config.properties", ignoreResourceNotFound = true)
+        @PropertySource(value="file:${user.home}/dev/studya/config.properties", ignoreResourceNotFound = true)
 })
 public class GlobalConfig {
     @Value("${spring.mail.username}")
