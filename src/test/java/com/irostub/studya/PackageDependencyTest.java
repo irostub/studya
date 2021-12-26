@@ -29,13 +29,13 @@ public class PackageDependencyTest {
     }
 
     //study 패키지는 스터디와 이벤트가 참조한다.
-    @Test
+    /*@Test
     public void studyModuleTest() {
         ArchRule rule = classes().that().resideInAnyPackage(STUDY)
                 .should().onlyBeAccessed().byClassesThat()
                 .resideInAnyPackage(STUDY, EVENT);
         rule.check(importedClasses);
-    }
+    }*/
 
     //event 패키지는 이벤트, 스터디, 어카운트를 참조한다.
     @Test
