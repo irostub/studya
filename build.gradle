@@ -12,6 +12,9 @@ group = 'com.irostub'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
+//log4j2 version update
+ext['log4j2.version'] = '2.15.0'
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
