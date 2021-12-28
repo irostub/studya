@@ -8,7 +8,10 @@
 + 사용자가 관심있는 지역에 대한 스터디 모임을 추천합니다.
 
 ## 프리뷰
+### login 이전 index 페이지
 ![index_before](./readme/img/index(before%20login).png)
+  
+### login 이후 index 페이지
 ![index_after](./readme/img/index(after%20login).png)
 
 ## 빌드
