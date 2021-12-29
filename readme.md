@@ -9,8 +9,7 @@
 
 ## 프리뷰
 ### login 이전 index 페이지
-<수정 중>
-<!-- ![index_before](./readme/img/index(before%20login).png) -->
+![index_before](./readme/img/index(before%20login).png)
   
 ### login 이후 index 페이지
 ![index_after](./readme/img/index(after%20login).png)
