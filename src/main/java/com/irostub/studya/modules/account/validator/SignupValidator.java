@@ -1,7 +1,7 @@
 package com.irostub.studya.modules.account.validator;
 
-import com.irostub.studya.modules.account.form.SignupForm;
 import com.irostub.studya.modules.account.AccountRepository;
+import com.irostub.studya.modules.account.form.SignupForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

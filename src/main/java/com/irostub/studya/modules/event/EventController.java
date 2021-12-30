@@ -1,9 +1,9 @@
 package com.irostub.studya.modules.event;
 
+import com.irostub.studya.modules.account.Account;
 import com.irostub.studya.modules.account.CurrentAccount;
 import com.irostub.studya.modules.event.form.EventForm;
 import com.irostub.studya.modules.event.validator.EventFormValidator;
-import com.irostub.studya.modules.account.Account;
 import com.irostub.studya.modules.study.Study;
 import com.irostub.studya.modules.study.StudyService;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,7 @@ public class EventController {
         if (bindingResult.hasErrors()) {
             model.addAttribute(study);
             model.addAttribute(account);
-            return "/content/event/form";
+            return "content/event/form";
         }
         Event event = eventMapper.eventFormToEventEntity(eventForm);
         eventService.createEvent(study, event, account);

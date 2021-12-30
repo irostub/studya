@@ -1,9 +1,9 @@
 package com.irostub.studya.modules.study;
 
+import com.irostub.studya.modules.account.Account;
 import com.irostub.studya.modules.account.CurrentAccount;
 import com.irostub.studya.modules.study.form.StudyForm;
 import com.irostub.studya.modules.study.validator.StudyFormValidator;
-import com.irostub.studya.modules.account.Account;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

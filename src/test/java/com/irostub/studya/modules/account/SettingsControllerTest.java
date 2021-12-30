@@ -1,16 +1,13 @@
 package com.irostub.studya.modules.account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irostub.studya.modules.tag.form.TagForm;
-import com.irostub.studya.modules.zone.form.ZoneForm;
-import com.irostub.studya.modules.account.Account;
 import com.irostub.studya.modules.tag.Tag;
-import com.irostub.studya.modules.zone.Zone;
-import com.irostub.studya.modules.account.AccountRepository;
 import com.irostub.studya.modules.tag.TagRepository;
+import com.irostub.studya.modules.tag.form.TagForm;
+import com.irostub.studya.modules.zone.Zone;
 import com.irostub.studya.modules.zone.ZoneRepository;
 import com.irostub.studya.modules.zone.ZoneService;
-import com.irostub.studya.modules.account.AccountService;
+import com.irostub.studya.modules.zone.form.ZoneForm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +21,6 @@ import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.time.LocalDateTime;
 import java.util.HashSet;

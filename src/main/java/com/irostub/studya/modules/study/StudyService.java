@@ -1,22 +1,20 @@
 package com.irostub.studya.modules.study;
 
+import com.irostub.studya.modules.account.Account;
 import com.irostub.studya.modules.study.event.StudyCreatedEvent;
 import com.irostub.studya.modules.study.event.StudyUpdateEvent;
 import com.irostub.studya.modules.study.form.StudyDescriptionForm;
 import com.irostub.studya.modules.study.form.StudyForm;
-import com.irostub.studya.modules.account.Account;
 import com.irostub.studya.modules.tag.Tag;
-import com.irostub.studya.modules.zone.Zone;
 import com.irostub.studya.modules.tag.TagRepository;
+import com.irostub.studya.modules.zone.Zone;
 import com.irostub.studya.modules.zone.ZoneRepository;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.utility.RandomString;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -85,6 +83,7 @@ public class StudyService {
         tags.add(tag);
     }
 
+    @Transactional
     public Study getStudyToUpdateTag(Account account, String path) {
         Study study = studyRepository.findStudyWithTagByPath(path).orElseThrow(IllegalArgumentException::new);
         checkIfManager(account, study);
@@ -103,6 +102,7 @@ public class StudyService {
         study.getTags().remove(tag);
     }
 
+    @Transactional
     public Study getStudyToUpdateZone(Account account, String path) {
         Study study = studyRepository.findStudyWithZoneByPath(path).orElseThrow(IllegalArgumentException::new);
         checkIfManager(account, study);

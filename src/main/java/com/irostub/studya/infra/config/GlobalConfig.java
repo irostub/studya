@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
 @Getter
-@Profile("dev")
+@Profile("dev|prod")
 @Configuration
 @PropertySources({
         @PropertySource(value="file:c:/dev/studya/config.properties", ignoreResourceNotFound = true),

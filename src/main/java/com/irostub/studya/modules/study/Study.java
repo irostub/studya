@@ -75,10 +75,10 @@ public class Study {
     @Length(min = 2, max = 100)
     private String shortDescription;
 
-    @Lob
+    @Lob @Basic(fetch = FetchType.EAGER)
     private String fullDescription;
 
-    @Lob
+    @Lob @Basic(fetch = FetchType.EAGER)
     private String image;
 
     @ManyToMany
