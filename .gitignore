@@ -360,3 +360,6 @@ dist
 
 #mapstruct generated target
 /src/main/generated/
+
+#credential
+/src/main/resources/application-prod.properties
