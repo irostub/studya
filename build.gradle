@@ -83,9 +83,13 @@ compileJava.dependsOn copyFrontLib
 
 //querydsl 추가 시작
 def querydslDir = "$buildDir/generated/querydsl"
+
 querydsl {
 	jpa = true
 	querydslSourcesDir = querydslDir
+}
+clean{
+	delete file("$buildDir/generated")
 }
 sourceSets {
 	main.java.srcDir querydslDir
@@ -95,5 +99,8 @@ configurations {
 }
 compileQuerydsl {
 	options.annotationProcessorPath = configurations.querydsl
+}
+compileQuerydsl.doFirst {
+	delete file("$buildDir/generated/querydsl")
 }
 //querydsl 추가 끝
